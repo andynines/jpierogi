@@ -17,13 +17,7 @@ public class TestIoManager implements IoManager {
     }
 
     @Override
-    public void println(String message) {
-        print(message);
-        print("\n");
-    }
-
-    @Override
-    public String getInput() {
+    public String requestInput() {
         return input;
     }
 

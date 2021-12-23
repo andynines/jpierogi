@@ -13,6 +13,14 @@ public class NativeString implements NativeType {
     }
 
     @Override
+    public boolean equals(NativeType other) {
+        if (!(other instanceof NativeString)) {
+            return false;
+        }
+        return value.equals(((NativeString) other).value);
+    }
+
+    @Override
     public String makePrintRepresentation() {
         return "\"" + value + "\"";
     }

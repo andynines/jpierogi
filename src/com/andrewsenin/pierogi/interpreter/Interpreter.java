@@ -62,6 +62,7 @@ public class Interpreter extends AstVisitor<NativeType> {
 
     @Override
     public NativeType visit(IdentifierExpression identifierExpression) {
+        // TODO: throw error if symbol isn't found
         return environment.lookUpValueOf(identifierExpression.getSymbol());
     }
 
@@ -97,79 +98,90 @@ public class Interpreter extends AstVisitor<NativeType> {
 
     @Override
     public NativeType visit(AdditionExpression additionExpression) {
-        NativeType leftValue = additionExpression.getLeft().accept(this);
-        NativeType rightValue = additionExpression.getRight().accept(this);
-        if (!(leftValue instanceof NativeNumber && rightValue instanceof NativeNumber)) {
-            throw ioManager.reportError(ErrorType.INCOMPATIBLE_TYPES, additionExpression, additionExpression.getLineNumber());
-        }
-        return ((NativeNumber) leftValue).add((NativeNumber) rightValue);
+        return evaluateBinaryNumericOperation(additionExpression, NativeNumber::add);
     }
 
     @Override
     public NativeType visit(SubtractionExpression subtractionExpression) {
-        return new NativeNil();
+        return evaluateBinaryNumericOperation(subtractionExpression, NativeNumber::subtract);
     }
 
     @Override
     public NativeType visit(MultiplicationExpression multiplicationExpression) {
-        return new NativeNil();
+        return evaluateBinaryNumericOperation(multiplicationExpression, NativeNumber::multiply);
     }
 
     @Override
     public NativeType visit(DivisionExpression divisionExpression) {
         // TODO: throw error on division by zero
-        return new NativeNil();
+        return evaluateBinaryNumericOperation(divisionExpression, NativeNumber::divide);
     }
 
     @Override
     public NativeType visit(ExponentExpression exponentExpression) {
-        return new NativeNil();
+        return evaluateBinaryNumericOperation(exponentExpression, NativeNumber::exponentiate);
     }
 
     @Override
     public NativeType visit(LessThanExpression lessThanExpression) {
-        return new NativeNil();
+        return evaluateBinaryNumericOperation(lessThanExpression, NativeNumber::lessThan);
     }
 
     @Override
     public NativeType visit(GreaterThanExpression greaterThanExpression) {
-        return new NativeNil();
+        return evaluateBinaryNumericOperation(greaterThanExpression, NativeNumber::greaterThan);
     }
 
     @Override
     public NativeType visit(LessEqualExpression lessEqualExpression) {
-        return new NativeNil();
+        return evaluateBinaryNumericOperation(lessEqualExpression, NativeNumber::lessEqual);
     }
 
     @Override
     public NativeType visit(GreaterEqualExpression greaterEqualExpression) {
-        return new NativeNil();
+        return evaluateBinaryNumericOperation(greaterEqualExpression, NativeNumber::greaterEqual);
     }
 
     @Override
     public NativeType visit(EqualsExpression equalsExpression) {
-        NativeType leftValue = equalsExpression.getLeft().accept(this);
-        NativeType rightValue = equalsExpression.getRight().accept(this);
-        return new NativeBool(leftValue.equals(rightValue));
+        return new NativeBool(equalsExpression.getLeft().accept(this).equals(equalsExpression.getRight().accept(this)));
     }
 
     @Override
     public NativeType visit(NotEqualExpression notEqualExpression) {
-        NativeType leftValue = notEqualExpression.getLeft().accept(this);
-        NativeType rightValue = notEqualExpression.getRight().accept(this);
-        return new NativeBool(!leftValue.equals(rightValue));
+        return new NativeBool(!notEqualExpression.getLeft().accept(this).equals(notEqualExpression.getRight().accept(this)));
     }
 
     @Override
     public NativeType visit(AndExpression andExpression) {
-        // TODO: add short-circuiting
-        return new NativeNil();
+        NativeType leftValue = andExpression.getLeft().accept(this);
+        if (!(leftValue instanceof NativeBool)) {
+            throw ioManager.reportError(ErrorType.INCOMPATIBLE_TYPES, andExpression, andExpression.getLineNumber());
+        }
+        if (!((NativeBool) leftValue).isTrue()) {
+            return new NativeBool(false);
+        }
+        NativeType rightValue = andExpression.getRight().accept(this);
+        if (!(rightValue instanceof NativeBool)) {
+            throw ioManager.reportError(ErrorType.INCOMPATIBLE_TYPES, andExpression, andExpression.getLineNumber());
+        }
+        return new NativeBool(((NativeBool) rightValue).isTrue());
     }
 
     @Override
     public NativeType visit(OrExpression orExpression) {
-        // TODO: add short-circuiting
-        return new NativeNil();
+        NativeType leftValue = orExpression.getLeft().accept(this);
+        if (!(leftValue instanceof NativeBool)) {
+            throw ioManager.reportError(ErrorType.INCOMPATIBLE_TYPES, orExpression, orExpression.getLineNumber());
+        }
+        if (((NativeBool) leftValue).isTrue()) {
+            return new NativeBool(true);
+        }
+        NativeType rightValue = orExpression.getRight().accept(this);
+        if (!(rightValue instanceof NativeBool)) {
+            throw ioManager.reportError(ErrorType.INCOMPATIBLE_TYPES, orExpression, orExpression.getLineNumber());
+        }
+        return new NativeBool(((NativeBool) rightValue).isTrue());
     }
 
     @Override
@@ -197,5 +209,15 @@ public class Interpreter extends AstVisitor<NativeType> {
         NativeType value = definitionExpression.getDefinition().accept(this);
         environment.addBinding(definitionExpression.getSymbol(), value);
         return value;
+    }
+
+    private <T extends Binary & Expression, R extends NativeType>
+    R evaluateBinaryNumericOperation(T expression, BiFunction<NativeNumber, NativeNumber, R> operation) {
+        NativeType leftValue = expression.getLeft().accept(this);
+        NativeType rightValue = expression.getRight().accept(this);
+        if (!(leftValue instanceof NativeNumber && rightValue instanceof NativeNumber)) {
+            throw ioManager.reportError(ErrorType.INCOMPATIBLE_TYPES, expression, expression.getLineNumber());
+        }
+        return operation.apply((NativeNumber) leftValue, (NativeNumber) rightValue);
     }
 }

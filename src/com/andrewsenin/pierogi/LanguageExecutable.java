@@ -46,12 +46,7 @@ public class LanguageExecutable implements IoManager {
     }
 
     @Override
-    public void println(String message) {
-        System.out.println(message);
-    }
-
-    @Override
-    public String getInput() {
+    public String requestInput() {
         return inputScanner.nextLine();
     }
 
@@ -87,13 +82,13 @@ public class LanguageExecutable implements IoManager {
 
     private void enterReplSession() {
         while (true) {
-            System.out.print(INPUT_PROMPT);
-            String source = getInput();
+            print(INPUT_PROMPT);
+            String source = requestInput();
             if (source.equals("exit")) {
                 break;
             }
             List<NativeType> values = interpreter.interpret(source);
-            values.forEach(value -> println(value.makePrintRepresentation()));
+            values.forEach(value -> print(value.makePrintRepresentation() + "\n"));
         }
     }
 

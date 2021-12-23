@@ -6,9 +6,7 @@ import com.andrewsenin.pierogi.lexer.Token;
 public interface IoManager {
     void print(String message);
 
-    void println(String message);
-
-    String getInput();
+    String requestInput();
 
     UnwindingException reportError(ErrorType errorType, String nearestLexeme, int lineNumber);
 

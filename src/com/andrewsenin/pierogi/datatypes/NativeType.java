@@ -1,6 +1,7 @@
 package com.andrewsenin.pierogi.datatypes;
 
 public interface NativeType {
-    // TODO: define equals?
+    boolean equals(NativeType other);
+
     String makePrintRepresentation();
 }

@@ -8,6 +8,10 @@ public class NativeBool implements NativeType {
         this.value = value;
     }
 
+    public boolean isTrue() {
+        return value;
+    }
+
     public NativeBool negate() {
         return new NativeBool(!value);
     }
@@ -18,6 +22,14 @@ public class NativeBool implements NativeType {
 
     public NativeBool or(NativeBool other) {
         return new NativeBool(value || other.value);
+    }
+
+    @Override
+    public boolean equals(NativeType other) {
+        if (!(other instanceof NativeBool)) {
+            return false;
+        }
+        return value == ((NativeBool) other).value;
     }
 
     @Override

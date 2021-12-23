@@ -27,4 +27,6 @@ public class InterpreterTest {
         assertEquals(Arrays.asList(1, 2, 3), l);
         assertEquals(Arrays.asList(1, 2, 3, 4), m);
     }
+
+    // TODO: and and or short circuit
 }

@@ -9,11 +9,7 @@ public class DummyIoManager implements IoManager {
     }
 
     @Override
-    public void println(String message) {
-    }
-
-    @Override
-    public String getInput() {
+    public String requestInput() {
         return "";
     }
 
