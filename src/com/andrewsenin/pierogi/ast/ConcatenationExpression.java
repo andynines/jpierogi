@@ -1,18 +1,13 @@
 package com.andrewsenin.pierogi.ast;
 
-public class ConcatenationExpression extends Expression {
-
-	private final Expression left;
-	private final Expression right;
+public class ConcatenationExpression extends Binary implements Expression {
 
 	public ConcatenationExpression(Expression left, Expression right) {
 		this(left, right, 0);
 	}
 
 	public ConcatenationExpression(Expression left, Expression right, int lineNumber) {
-		super(lineNumber);
-		this.left = left;
-		this.right = right;
+		super(left, right, lineNumber);
 	}
 
 	@Override
@@ -28,13 +23,4 @@ public class ConcatenationExpression extends Expression {
 		ConcatenationExpression other = (ConcatenationExpression) expression;
 		return left.equals(other.left) && right.equals(other.right);
 	}
-
-	public Expression getLeft() {
-		return left;
-	}
-
-	public Expression getRight() {
-		return right;
-	}
-
 }

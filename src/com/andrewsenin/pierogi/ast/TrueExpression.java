@@ -1,8 +1,8 @@
 package com.andrewsenin.pierogi.ast;
 
-public class TrueExpression extends Expression {
+public class TrueExpression extends LineNumbered implements Expression {
 
-	
+
 
 	public TrueExpression() {
 		this(0);

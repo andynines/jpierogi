@@ -1,8 +1,8 @@
 package com.andrewsenin.pierogi.ast;
 
-public class IdentifierExpression extends Expression {
+public class IdentifierExpression extends LineNumbered implements Expression {
 
-	private final String symbol;
+	protected final String symbol;
 
 	public IdentifierExpression(String symbol) {
 		this(symbol, 0);
@@ -30,5 +30,4 @@ public class IdentifierExpression extends Expression {
 	public String getSymbol() {
 		return symbol;
 	}
-
 }

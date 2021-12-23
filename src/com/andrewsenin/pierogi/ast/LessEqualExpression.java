@@ -1,18 +1,13 @@
 package com.andrewsenin.pierogi.ast;
 
-public class LessEqualExpression extends Expression {
-
-	private final Expression left;
-	private final Expression right;
+public class LessEqualExpression extends Binary implements Expression {
 
 	public LessEqualExpression(Expression left, Expression right) {
 		this(left, right, 0);
 	}
 
 	public LessEqualExpression(Expression left, Expression right, int lineNumber) {
-		super(lineNumber);
-		this.left = left;
-		this.right = right;
+		super(left, right, lineNumber);
 	}
 
 	@Override
@@ -28,13 +23,4 @@ public class LessEqualExpression extends Expression {
 		LessEqualExpression other = (LessEqualExpression) expression;
 		return left.equals(other.left) && right.equals(other.right);
 	}
-
-	public Expression getLeft() {
-		return left;
-	}
-
-	public Expression getRight() {
-		return right;
-	}
-
 }

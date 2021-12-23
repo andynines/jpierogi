@@ -1,16 +1,13 @@
 package com.andrewsenin.pierogi.ast;
 
-public class NotExpression extends Expression {
-
-	private final Expression inside;
+public class NotExpression extends Unary implements Expression {
 
 	public NotExpression(Expression inside) {
 		this(inside, 0);
 	}
 
 	public NotExpression(Expression inside, int lineNumber) {
-		super(lineNumber);
-		this.inside = inside;
+		super(inside, lineNumber);
 	}
 
 	@Override
@@ -26,9 +23,4 @@ public class NotExpression extends Expression {
 		NotExpression other = (NotExpression) expression;
 		return inside.equals(other.inside);
 	}
-
-	public Expression getInside() {
-		return inside;
-	}
-
 }

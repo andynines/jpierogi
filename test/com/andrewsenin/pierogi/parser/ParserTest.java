@@ -16,9 +16,9 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 public class ParserTest {
     @Test
     void parse_valueless_literals() {
-        expectSingleNode("nil", NilExpression.class);
-        expectSingleNode("true", TrueExpression.class);
-        expectSingleNode("false", FalseExpression.class);
+        assertEquals(new NilExpression(), parseSingleLine("nil"));
+        assertEquals(new TrueExpression(), parseSingleLine("true"));
+        assertEquals(new FalseExpression(), parseSingleLine("false"));
     }
 
     @Test

@@ -1,33 +1,31 @@
-define EmptyExpression
-extend EmptyExpression NilExpression
-extend EmptyExpression TrueExpression
-extend EmptyExpression FalseExpression
+unique Nil
+unique True
+unique False
+unique Number Double value
+unique String String value
+unique List java.util.List<Expression> contents
 
-define NumberExpression Double value
-define StringExpression String value
-define ListExpression java.util.List<Expression> contents
+base Unary Expression inside
+derived Group Unary
+derived Negation Unary
+derived Not Unary
 
-define UnaryOperation Expression inside
-extend UnaryOperation GroupExpression
-extend UnaryOperation NegationExpression
-extend UnaryOperation NotExpression
+base Binary Expression left Expression right
+derived Addition Binary
+derived Subtraction Binary
+derived Multiplication Binary
+derived Division Binary
+derived Exponent Binary
+derived LessThan Binary
+derived GreaterThan Binary
+derived LessEqual Binary
+derived GreaterEqual Binary
+derived Equals Binary
+derived NotEqual Binary
+derived And Binary
+derived Or Binary
+derived Concatenation Binary
+derived Cons Binary
 
-define BinaryOperation Expression left Expression right
-extend BinaryOperation AdditionExpression
-extend BinaryOperation SubtractionExpression
-extend BinaryOperation MultiplicationExpression
-extend BinaryOperation DivisionExpression
-extend BinaryOperation ExponentExpression
-extend BinaryOperation LessThanExpression
-extend BinaryOperation GreaterThanExpression
-extend BinaryOperation LessEqualExpression
-extend BinaryOperation GreaterEqualExpression
-extend BinaryOperation EqualsExpression
-extend BinaryOperation NotEqualExpression
-extend BinaryOperation AndExpression
-extend BinaryOperation OrExpression
-extend BinaryOperation ConcatenationExpression
-extend BinaryOperation ConsExpression
-
-define IdentifierExpression String symbol
-define DefinitionExpression String symbol Expression value
+unique Identifier String symbol
+unique Definition String symbol Expression definition

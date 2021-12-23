@@ -1,16 +1,13 @@
 package com.andrewsenin.pierogi.ast;
 
-public class NegationExpression extends Expression {
-
-	private final Expression inside;
+public class NegationExpression extends Unary implements Expression {
 
 	public NegationExpression(Expression inside) {
 		this(inside, 0);
 	}
 
 	public NegationExpression(Expression inside, int lineNumber) {
-		super(lineNumber);
-		this.inside = inside;
+		super(inside, lineNumber);
 	}
 
 	@Override
@@ -26,9 +23,4 @@ public class NegationExpression extends Expression {
 		NegationExpression other = (NegationExpression) expression;
 		return inside.equals(other.inside);
 	}
-
-	public Expression getInside() {
-		return inside;
-	}
-
 }

@@ -1,8 +1,8 @@
 package com.andrewsenin.pierogi.ast;
 
-public class NilExpression extends Expression {
+public class NilExpression extends LineNumbered implements Expression {
 
-	
+
 
 	public NilExpression() {
 		this(0);

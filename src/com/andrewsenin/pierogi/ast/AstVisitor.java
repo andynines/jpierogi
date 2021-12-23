@@ -7,6 +7,8 @@ public abstract class AstVisitor<T> {
 	public abstract T visit(NumberExpression numberExpression);
 	public abstract T visit(StringExpression stringExpression);
 	public abstract T visit(ListExpression listExpression);
+	public abstract T visit(IdentifierExpression identifierExpression);
+	public abstract T visit(DefinitionExpression definitionExpression);
 	public abstract T visit(GroupExpression groupExpression);
 	public abstract T visit(NegationExpression negationExpression);
 	public abstract T visit(NotExpression notExpression);
@@ -25,6 +27,4 @@ public abstract class AstVisitor<T> {
 	public abstract T visit(OrExpression orExpression);
 	public abstract T visit(ConcatenationExpression concatenationExpression);
 	public abstract T visit(ConsExpression consExpression);
-	public abstract T visit(IdentifierExpression identifierExpression);
-	public abstract T visit(DefinitionExpression definitionExpression);
 }

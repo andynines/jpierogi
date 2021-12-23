@@ -1,18 +1,13 @@
 package com.andrewsenin.pierogi.ast;
 
-public class ExponentExpression extends Expression {
+public class ExponentExpression extends Binary implements Expression {
 
-	private final Expression base;
-	private final Expression power;
-
-	public ExponentExpression(Expression base, Expression power) {
-		this(base, power, 0);
+	public ExponentExpression(Expression left, Expression right) {
+		this(left, right, 0);
 	}
 
-	public ExponentExpression(Expression base, Expression power, int lineNumber) {
-		super(lineNumber);
-		this.base = base;
-		this.power = power;
+	public ExponentExpression(Expression left, Expression right, int lineNumber) {
+		super(left, right, lineNumber);
 	}
 
 	@Override
@@ -26,15 +21,6 @@ public class ExponentExpression extends Expression {
 			return false;
 		}
 		ExponentExpression other = (ExponentExpression) expression;
-		return base.equals(other.base) && power.equals(other.power);
+		return left.equals(other.left) && right.equals(other.right);
 	}
-
-	public Expression getBase() {
-		return base;
-	}
-
-	public Expression getPower() {
-		return power;
-	}
-
 }

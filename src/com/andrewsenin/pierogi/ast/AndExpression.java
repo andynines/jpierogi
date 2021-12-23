@@ -1,18 +1,13 @@
 package com.andrewsenin.pierogi.ast;
 
-public class AndExpression extends Expression {
-
-	private final Expression left;
-	private final Expression right;
+public class AndExpression extends Binary implements Expression {
 
 	public AndExpression(Expression left, Expression right) {
 		this(left, right, 0);
 	}
 
 	public AndExpression(Expression left, Expression right, int lineNumber) {
-		super(lineNumber);
-		this.left = left;
-		this.right = right;
+		super(left, right, lineNumber);
 	}
 
 	@Override
@@ -28,13 +23,4 @@ public class AndExpression extends Expression {
 		AndExpression other = (AndExpression) expression;
 		return left.equals(other.left) && right.equals(other.right);
 	}
-
-	public Expression getLeft() {
-		return left;
-	}
-
-	public Expression getRight() {
-		return right;
-	}
-
 }

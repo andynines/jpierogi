@@ -1,16 +1,13 @@
 package com.andrewsenin.pierogi.ast;
 
-public class GroupExpression extends Expression {
-
-	private final Expression inside;
+public class GroupExpression extends Unary implements Expression {
 
 	public GroupExpression(Expression inside) {
 		this(inside, 0);
 	}
 
 	public GroupExpression(Expression inside, int lineNumber) {
-		super(lineNumber);
-		this.inside = inside;
+		super(inside, lineNumber);
 	}
 
 	@Override
@@ -26,9 +23,4 @@ public class GroupExpression extends Expression {
 		GroupExpression other = (GroupExpression) expression;
 		return inside.equals(other.inside);
 	}
-
-	public Expression getInside() {
-		return inside;
-	}
-
 }

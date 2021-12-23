@@ -1,18 +1,18 @@
 package com.andrewsenin.pierogi.ast;
 
-public class DefinitionExpression extends Expression {
+public class DefinitionExpression extends LineNumbered implements Expression {
 
-	private final String symbol;
-	private final Expression value;
+	protected final String symbol;
+	protected final Expression definition;
 
-	public DefinitionExpression(String symbol, Expression value) {
-		this(symbol, value, 0);
+	public DefinitionExpression(String symbol, Expression definition) {
+		this(symbol, definition, 0);
 	}
 
-	public DefinitionExpression(String symbol, Expression value, int lineNumber) {
+	public DefinitionExpression(String symbol, Expression definition, int lineNumber) {
 		super(lineNumber);
 		this.symbol = symbol;
-		this.value = value;
+		this.definition = definition;
 	}
 
 	@Override
@@ -26,15 +26,14 @@ public class DefinitionExpression extends Expression {
 			return false;
 		}
 		DefinitionExpression other = (DefinitionExpression) expression;
-		return symbol.equals(other.symbol) && value.equals(other.value);
+		return symbol.equals(other.symbol) && definition.equals(other.definition);
 	}
 
 	public String getSymbol() {
 		return symbol;
 	}
 
-	public Expression getValue() {
-		return value;
+	public Expression getDefinition() {
+		return definition;
 	}
-
 }

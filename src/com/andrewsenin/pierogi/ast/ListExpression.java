@@ -1,8 +1,8 @@
 package com.andrewsenin.pierogi.ast;
 
-public class ListExpression extends Expression {
+public class ListExpression extends LineNumbered implements Expression {
 
-	private final java.util.List<Expression> contents;
+	protected final java.util.List<Expression> contents;
 
 	public ListExpression(java.util.List<Expression> contents) {
 		this(contents, 0);
@@ -30,5 +30,4 @@ public class ListExpression extends Expression {
 	public java.util.List<Expression> getContents() {
 		return contents;
 	}
-
 }

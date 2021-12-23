@@ -1,8 +1,8 @@
 package com.andrewsenin.pierogi.ast;
 
-public class FalseExpression extends Expression {
+public class FalseExpression extends LineNumbered implements Expression {
 
-	
+
 
 	public FalseExpression() {
 		this(0);

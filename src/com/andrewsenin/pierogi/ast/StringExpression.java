@@ -1,8 +1,8 @@
 package com.andrewsenin.pierogi.ast;
 
-public class StringExpression extends Expression {
+public class StringExpression extends LineNumbered implements Expression {
 
-	private final String value;
+	protected final String value;
 
 	public StringExpression(String value) {
 		this(value, 0);
@@ -30,5 +30,4 @@ public class StringExpression extends Expression {
 	public String getValue() {
 		return value;
 	}
-
 }

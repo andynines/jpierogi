@@ -183,7 +183,7 @@ public class LexerTest { // TODO: ensure identifier like _leadingUnderscore is r
         expectNumberLexemeContents("123", 123);
         expectNumberLexemeContents("000123", 123);
         expectNumberLexemeContents("123.456", 123.456);
-        expectNumberLexemeContents("0.0125", 0.0125);
+        expectNumberLexemeContents("0.012500", 0.0125);
         expectNumberLexemeContents("00001.23", 1.23);
     }
 

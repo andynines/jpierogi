@@ -1,7 +1,6 @@
 package com.andrewsenin.pierogi.interpreter;
 
 import com.andrewsenin.pierogi.ast.*;
-import com.andrewsenin.pierogi.ast.NilExpression;
 import com.andrewsenin.pierogi.datatypes.*;
 import com.andrewsenin.pierogi.io.ErrorType;
 import com.andrewsenin.pierogi.io.IoManager;
@@ -108,43 +107,43 @@ public class Interpreter extends AstVisitor<NativeType> {
 
     @Override
     public NativeType visit(SubtractionExpression subtractionExpression) {
-        return evaluateBinaryNumericOperation(subtractionExpression.getLeft(), subtractionExpression.getRight(), (x, y) -> x - y, subtractionExpression.getLineNumber());
+        return new NativeNil();
     }
 
     @Override
     public NativeType visit(MultiplicationExpression multiplicationExpression) {
-        return evaluateBinaryNumericOperation(multiplicationExpression.getLeft(), multiplicationExpression.getRight(), (x, y) -> x * y, multiplicationExpression.getLineNumber());
+        return new NativeNil();
     }
 
     @Override
     public NativeType visit(DivisionExpression divisionExpression) {
         // TODO: throw error on division by zero
-        return evaluateBinaryNumericOperation(divisionExpression.getLeft(), divisionExpression.getRight(), (x, y) -> x / y, divisionExpression.getLineNumber());
+        return new NativeNil();
     }
 
     @Override
     public NativeType visit(ExponentExpression exponentExpression) {
-        return evaluateBinaryNumericOperation(exponentExpression.getBase(), exponentExpression.getPower(), Math::pow, exponentExpression.getLineNumber());
+        return new NativeNil();
     }
 
     @Override
     public NativeType visit(LessThanExpression lessThanExpression) {
-        return evaluateBinaryNumericOperation(lessThanExpression.getLeft(), lessThanExpression.getRight(), (x, y) -> x < y, lessThanExpression.getLineNumber());
+        return new NativeNil();
     }
 
     @Override
     public NativeType visit(GreaterThanExpression greaterThanExpression) {
-        return evaluateBinaryNumericOperation(greaterThanExpression.getLeft(), greaterThanExpression.getRight(), (x, y) -> x > y, greaterThanExpression.getLineNumber());
+        return new NativeNil();
     }
 
     @Override
     public NativeType visit(LessEqualExpression lessEqualExpression) {
-        return evaluateBinaryNumericOperation(lessEqualExpression.getLeft(), lessEqualExpression.getRight(), (x, y) -> x <= y, lessEqualExpression.getLineNumber());
+        return new NativeNil();
     }
 
     @Override
     public NativeType visit(GreaterEqualExpression greaterEqualExpression) {
-        return evaluateBinaryNumericOperation(greaterEqualExpression.getLeft(), greaterEqualExpression.getRight(), (x, y) -> x >= y, greaterEqualExpression.getLineNumber());
+        return new NativeNil();
     }
 
     @Override
@@ -164,13 +163,13 @@ public class Interpreter extends AstVisitor<NativeType> {
     @Override
     public NativeType visit(AndExpression andExpression) {
         // TODO: add short-circuiting
-        return evaluateBinaryLogicalOperation(andExpression.getLeft(), andExpression.getRight(), (x, y) -> x && y, andExpression.getLineNumber());
+        return new NativeNil();
     }
 
     @Override
     public NativeType visit(OrExpression orExpression) {
         // TODO: add short-circuiting
-        return evaluateBinaryLogicalOperation(orExpression.getLeft(), orExpression.getRight(), (x, y) -> x || y, orExpression.getLineNumber());
+        return new NativeNil();
     }
 
     @Override
@@ -195,26 +194,8 @@ public class Interpreter extends AstVisitor<NativeType> {
 
     @Override
     public NativeType visit(DefinitionExpression definitionExpression) {
-        NativeType value = definitionExpression.getValue().accept(this);
+        NativeType value = definitionExpression.getDefinition().accept(this);
         environment.addBinding(definitionExpression.getSymbol(), value);
         return value;
-    }
-
-    private <T> Object evaluateBinaryNumericOperation(Expression left, Expression right, BiFunction<Double, Double, T> operation, int lineNumber) {
-        Object leftValue = left.accept(this);
-        Object rightValue = right.accept(this);
-        if (!(leftValue instanceof Double) || !(rightValue instanceof Double)) {
-            ioManager.reportError(ErrorType.INCOMPATIBLE_TYPES, left, lineNumber);
-        } // TODO: throw exception from above report
-        return operation.apply((Double) leftValue, (Double) rightValue);
-    }
-
-    private Object evaluateBinaryLogicalOperation(Expression left, Expression right, BiFunction<Boolean, Boolean, Boolean> operation, int lineNumber) {
-        Object leftValue = left.accept(this);
-        Object rightValue = right.accept(this);
-        if (!(leftValue instanceof Boolean) || !(rightValue instanceof Boolean)) {
-            ioManager.reportError(ErrorType.INCOMPATIBLE_TYPES, left, lineNumber);
-        } // TODO: throw exception
-        return operation.apply((Boolean) leftValue, (Boolean) rightValue);
     }
 }

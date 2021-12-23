@@ -1,8 +1,8 @@
 package com.andrewsenin.pierogi.ast;
 
-public class NumberExpression extends Expression {
+public class NumberExpression extends LineNumbered implements Expression {
 
-	private final Double value;
+	protected final Double value;
 
 	public NumberExpression(Double value) {
 		this(value, 0);
@@ -30,5 +30,4 @@ public class NumberExpression extends Expression {
 	public Double getValue() {
 		return value;
 	}
-
 }

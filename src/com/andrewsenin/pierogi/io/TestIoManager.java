@@ -32,14 +32,17 @@ public class TestIoManager implements IoManager {
         mostRecentErrorType = errorType;
         mostRecentErrorLineNumber = lineNumber;
         mostRecentErrorLexeme = nearestLexeme;
+        return new UnwindingException();
     }
 
     @Override
     public UnwindingException reportError(ErrorType errorType, Token nearestToken, int lineNumber) {
+        return new UnwindingException();
     }
 
     @Override
     public UnwindingException reportError(ErrorType errorType, Expression nearestExpression, int lineNumber) {
+        return new UnwindingException();
     }
 
     public String getOutput() {
