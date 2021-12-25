@@ -23,8 +23,6 @@ public class Interpreter extends AstVisitor<NativeType> {
         this.ioManager = ioManager;
     }
 
-    // TODO: eliminate all uses of Object. See lexer, parser
-
     public List<NativeType> interpret(String source) {
         Lexer lexer = new Lexer(source, ioManager);
         List<Token> tokens = lexer.lexSource();
@@ -62,8 +60,11 @@ public class Interpreter extends AstVisitor<NativeType> {
 
     @Override
     public NativeType visit(IdentifierExpression identifierExpression) {
-        // TODO: throw error if symbol isn't found
-        return environment.lookUpValueOf(identifierExpression.getSymbol());
+        String symbol = identifierExpression.getSymbol();
+        if (!environment.hasDefinitionFor(symbol)) {
+            throw ioManager.reportError(ErrorType.UNDEFINED_SYMBOL, identifierExpression, identifierExpression.getLineNumber());
+        }
+        return environment.lookUpValueOf(symbol);
     }
 
     @Override
@@ -98,48 +99,48 @@ public class Interpreter extends AstVisitor<NativeType> {
 
     @Override
     public NativeType visit(AdditionExpression additionExpression) {
-        return evaluateBinaryNumericOperation(additionExpression, NativeNumber::add);
+        return evaluateBinaryNumericExpression(additionExpression, NativeNumber::add);
     }
 
     @Override
     public NativeType visit(SubtractionExpression subtractionExpression) {
-        return evaluateBinaryNumericOperation(subtractionExpression, NativeNumber::subtract);
+        return evaluateBinaryNumericExpression(subtractionExpression, NativeNumber::subtract);
     }
 
     @Override
     public NativeType visit(MultiplicationExpression multiplicationExpression) {
-        return evaluateBinaryNumericOperation(multiplicationExpression, NativeNumber::multiply);
+        return evaluateBinaryNumericExpression(multiplicationExpression, NativeNumber::multiply);
     }
 
     @Override
     public NativeType visit(DivisionExpression divisionExpression) {
         // TODO: throw error on division by zero
-        return evaluateBinaryNumericOperation(divisionExpression, NativeNumber::divide);
+        return evaluateBinaryNumericExpression(divisionExpression, NativeNumber::divide);
     }
 
     @Override
     public NativeType visit(ExponentExpression exponentExpression) {
-        return evaluateBinaryNumericOperation(exponentExpression, NativeNumber::exponentiate);
+        return evaluateBinaryNumericExpression(exponentExpression, NativeNumber::exponentiate);
     }
 
     @Override
     public NativeType visit(LessThanExpression lessThanExpression) {
-        return evaluateBinaryNumericOperation(lessThanExpression, NativeNumber::lessThan);
+        return evaluateBinaryNumericExpression(lessThanExpression, NativeNumber::lessThan);
     }
 
     @Override
     public NativeType visit(GreaterThanExpression greaterThanExpression) {
-        return evaluateBinaryNumericOperation(greaterThanExpression, NativeNumber::greaterThan);
+        return evaluateBinaryNumericExpression(greaterThanExpression, NativeNumber::greaterThan);
     }
 
     @Override
     public NativeType visit(LessEqualExpression lessEqualExpression) {
-        return evaluateBinaryNumericOperation(lessEqualExpression, NativeNumber::lessEqual);
+        return evaluateBinaryNumericExpression(lessEqualExpression, NativeNumber::lessEqual);
     }
 
     @Override
     public NativeType visit(GreaterEqualExpression greaterEqualExpression) {
-        return evaluateBinaryNumericOperation(greaterEqualExpression, NativeNumber::greaterEqual);
+        return evaluateBinaryNumericExpression(greaterEqualExpression, NativeNumber::greaterEqual);
     }
 
     @Override
@@ -211,13 +212,32 @@ public class Interpreter extends AstVisitor<NativeType> {
         return value;
     }
 
-    private <T extends Binary & Expression, R extends NativeType>
-    R evaluateBinaryNumericOperation(T expression, BiFunction<NativeNumber, NativeNumber, R> operation) {
+    @Override
+    public NativeType visit(IfExpression ifExpression) {
+        NativeType conditionValue = ifExpression.getCondition().accept(this);
+        if (!(conditionValue instanceof NativeBool)) {
+            throw ioManager.reportError(ErrorType.INCOMPATIBLE_TYPES, ifExpression.getCondition(), ((LineNumbered) ifExpression.getCondition()).getLineNumber());
+        }
+        return evaluateBlock(((NativeBool) conditionValue).isTrue() ? ifExpression.getConsequent() : ifExpression.getAlternative());
+    }
+
+    private <T extends Binary & Expression>
+    NativeType evaluateBinaryNumericExpression(T expression, BiFunction<NativeNumber, NativeNumber, NativeType> operation) {
         NativeType leftValue = expression.getLeft().accept(this);
         NativeType rightValue = expression.getRight().accept(this);
         if (!(leftValue instanceof NativeNumber && rightValue instanceof NativeNumber)) {
             throw ioManager.reportError(ErrorType.INCOMPATIBLE_TYPES, expression, expression.getLineNumber());
         }
         return operation.apply((NativeNumber) leftValue, (NativeNumber) rightValue);
+    }
+
+    private NativeType evaluateBlock(List<Expression> block) {
+        environment.pushNewFrame();
+        NativeType result = null;
+        for (Expression expression : block) {
+            result = expression.accept(this);
+        }
+        environment.popCurrentFrame();
+        return result;
     }
 }

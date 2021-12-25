@@ -32,6 +32,8 @@ public enum TokenType {
     TRUE,
     FALSE,
     NIL,
+    IF,
+    ELSE,
 
     IDENTIFIER,
     STRING,

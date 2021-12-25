@@ -16,11 +16,11 @@ public class GreaterEqualExpression extends Binary implements Expression {
 	}
 
 	@Override
-	public boolean equals(Expression expression) {
-		if (!(expression instanceof GreaterEqualExpression)) {
+	public boolean equals(Object object) {
+		if (!(object instanceof GreaterEqualExpression)) {
 			return false;
 		}
-		GreaterEqualExpression other = (GreaterEqualExpression) expression;
+		GreaterEqualExpression other = (GreaterEqualExpression) object;
 		return left.equals(other.left) && right.equals(other.right);
 	}
 }

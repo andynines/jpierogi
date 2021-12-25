@@ -16,11 +16,11 @@ public class LessThanExpression extends Binary implements Expression {
 	}
 
 	@Override
-	public boolean equals(Expression expression) {
-		if (!(expression instanceof LessThanExpression)) {
+	public boolean equals(Object object) {
+		if (!(object instanceof LessThanExpression)) {
 			return false;
 		}
-		LessThanExpression other = (LessThanExpression) expression;
+		LessThanExpression other = (LessThanExpression) object;
 		return left.equals(other.left) && right.equals(other.right);
 	}
 }

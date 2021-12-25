@@ -16,11 +16,11 @@ public class EqualsExpression extends Binary implements Expression {
 	}
 
 	@Override
-	public boolean equals(Expression expression) {
-		if (!(expression instanceof EqualsExpression)) {
+	public boolean equals(Object object) {
+		if (!(object instanceof EqualsExpression)) {
 			return false;
 		}
-		EqualsExpression other = (EqualsExpression) expression;
+		EqualsExpression other = (EqualsExpression) object;
 		return left.equals(other.left) && right.equals(other.right);
 	}
 }

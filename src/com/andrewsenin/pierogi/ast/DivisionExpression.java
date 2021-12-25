@@ -16,11 +16,11 @@ public class DivisionExpression extends Binary implements Expression {
 	}
 
 	@Override
-	public boolean equals(Expression expression) {
-		if (!(expression instanceof DivisionExpression)) {
+	public boolean equals(Object object) {
+		if (!(object instanceof DivisionExpression)) {
 			return false;
 		}
-		DivisionExpression other = (DivisionExpression) expression;
+		DivisionExpression other = (DivisionExpression) object;
 		return left.equals(other.left) && right.equals(other.right);
 	}
 }

@@ -16,11 +16,11 @@ public class AndExpression extends Binary implements Expression {
 	}
 
 	@Override
-	public boolean equals(Expression expression) {
-		if (!(expression instanceof AndExpression)) {
+	public boolean equals(Object object) {
+		if (!(object instanceof AndExpression)) {
 			return false;
 		}
-		AndExpression other = (AndExpression) expression;
+		AndExpression other = (AndExpression) object;
 		return left.equals(other.left) && right.equals(other.right);
 	}
 }

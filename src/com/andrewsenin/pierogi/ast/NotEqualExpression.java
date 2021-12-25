@@ -16,11 +16,11 @@ public class NotEqualExpression extends Binary implements Expression {
 	}
 
 	@Override
-	public boolean equals(Expression expression) {
-		if (!(expression instanceof NotEqualExpression)) {
+	public boolean equals(Object object) {
+		if (!(object instanceof NotEqualExpression)) {
 			return false;
 		}
-		NotEqualExpression other = (NotEqualExpression) expression;
+		NotEqualExpression other = (NotEqualExpression) object;
 		return left.equals(other.left) && right.equals(other.right);
 	}
 }

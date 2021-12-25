@@ -16,11 +16,11 @@ public class ConsExpression extends Binary implements Expression {
 	}
 
 	@Override
-	public boolean equals(Expression expression) {
-		if (!(expression instanceof ConsExpression)) {
+	public boolean equals(Object object) {
+		if (!(object instanceof ConsExpression)) {
 			return false;
 		}
-		ConsExpression other = (ConsExpression) expression;
+		ConsExpression other = (ConsExpression) object;
 		return left.equals(other.left) && right.equals(other.right);
 	}
 }

@@ -16,11 +16,11 @@ public class SubtractionExpression extends Binary implements Expression {
 	}
 
 	@Override
-	public boolean equals(Expression expression) {
-		if (!(expression instanceof SubtractionExpression)) {
+	public boolean equals(Object object) {
+		if (!(object instanceof SubtractionExpression)) {
 			return false;
 		}
-		SubtractionExpression other = (SubtractionExpression) expression;
+		SubtractionExpression other = (SubtractionExpression) object;
 		return left.equals(other.left) && right.equals(other.right);
 	}
 }

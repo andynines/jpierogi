@@ -19,11 +19,11 @@ public class FalseExpression extends LineNumbered implements Expression {
 	}
 
 	@Override
-	public boolean equals(Expression expression) {
-		if (!(expression instanceof FalseExpression)) {
+	public boolean equals(Object object) {
+		if (!(object instanceof FalseExpression)) {
 			return false;
 		}
-		FalseExpression other = (FalseExpression) expression;
+		FalseExpression other = (FalseExpression) object;
 		return true;
 	}
 

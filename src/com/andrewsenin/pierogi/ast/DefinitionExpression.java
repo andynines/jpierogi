@@ -21,11 +21,11 @@ public class DefinitionExpression extends LineNumbered implements Expression {
 	}
 
 	@Override
-	public boolean equals(Expression expression) {
-		if (!(expression instanceof DefinitionExpression)) {
+	public boolean equals(Object object) {
+		if (!(object instanceof DefinitionExpression)) {
 			return false;
 		}
-		DefinitionExpression other = (DefinitionExpression) expression;
+		DefinitionExpression other = (DefinitionExpression) object;
 		return symbol.equals(other.symbol) && definition.equals(other.definition);
 	}
 

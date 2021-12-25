@@ -16,11 +16,11 @@ public class MultiplicationExpression extends Binary implements Expression {
 	}
 
 	@Override
-	public boolean equals(Expression expression) {
-		if (!(expression instanceof MultiplicationExpression)) {
+	public boolean equals(Object object) {
+		if (!(object instanceof MultiplicationExpression)) {
 			return false;
 		}
-		MultiplicationExpression other = (MultiplicationExpression) expression;
+		MultiplicationExpression other = (MultiplicationExpression) object;
 		return left.equals(other.left) && right.equals(other.right);
 	}
 }

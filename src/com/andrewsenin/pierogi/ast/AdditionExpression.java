@@ -16,11 +16,11 @@ public class AdditionExpression extends Binary implements Expression {
 	}
 
 	@Override
-	public boolean equals(Expression expression) {
-		if (!(expression instanceof AdditionExpression)) {
+	public boolean equals(Object object) {
+		if (!(object instanceof AdditionExpression)) {
 			return false;
 		}
-		AdditionExpression other = (AdditionExpression) expression;
+		AdditionExpression other = (AdditionExpression) object;
 		return left.equals(other.left) && right.equals(other.right);
 	}
 }

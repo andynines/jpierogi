@@ -4,7 +4,7 @@ import argparse
 import pathlib
 from typing import Dict, List
 
-# TODO: lots of code cleanup. Consolidate generation of uniques, bases, and derived
+# TODO: lots of code cleanup. Consolidate generation of uniques, bases, and derived into one template
 # TODO: reorder function definitions
 
 
@@ -158,11 +158,11 @@ public class {class_name} extends LineNumbered implements Expression {{
 \t}}
 
 \t@Override
-\tpublic boolean equals(Expression expression) {{
-\t\tif (!(expression instanceof {class_name})) {{
+\tpublic boolean equals(Object object) {{
+\t\tif (!(object instanceof {class_name})) {{
 \t\t\treturn false;
 \t\t}}
-\t\t{class_name} other = ({class_name}) expression;
+\t\t{class_name} other = ({class_name}) object;
 \t\treturn {field_comparisons};
 \t}}
 
@@ -211,11 +211,11 @@ public class {class_name} extends {base_name} implements Expression {{
 \t}}
 
 \t@Override
-\tpublic boolean equals(Expression expression) {{
-\t\tif (!(expression instanceof {class_name})) {{
+\tpublic boolean equals(Object object) {{
+\t\tif (!(object instanceof {class_name})) {{
 \t\t\treturn false;
 \t\t}}
-\t\t{class_name} other = ({class_name}) expression;
+\t\t{class_name} other = ({class_name}) object;
 \t\treturn {field_comparisons};
 \t}}
 }}"""

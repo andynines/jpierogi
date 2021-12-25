@@ -19,11 +19,11 @@ public class IdentifierExpression extends LineNumbered implements Expression {
 	}
 
 	@Override
-	public boolean equals(Expression expression) {
-		if (!(expression instanceof IdentifierExpression)) {
+	public boolean equals(Object object) {
+		if (!(object instanceof IdentifierExpression)) {
 			return false;
 		}
-		IdentifierExpression other = (IdentifierExpression) expression;
+		IdentifierExpression other = (IdentifierExpression) object;
 		return symbol.equals(other.symbol);
 	}
 

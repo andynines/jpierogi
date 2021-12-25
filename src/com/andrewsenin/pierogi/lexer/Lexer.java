@@ -16,7 +16,9 @@ public class Lexer {
             "not", TokenType.NOT,
             "true", TokenType.TRUE,
             "false", TokenType.FALSE,
-            "nil", TokenType.NIL
+            "nil", TokenType.NIL,
+            "if", TokenType.IF,
+            "else", TokenType.ELSE
     );
 
     private final String source;
@@ -165,8 +167,8 @@ public class Lexer {
         }
         consumeCurrentCharacter(); // Consume closing '"'
         String lexeme = getCurrentLexeme();
-        String stringContents = lexeme.substring(1, lexeme.length() - 1);
-        addToken(TokenType.STRING, lexeme, stringContents);
+        String value = lexeme.substring(1, lexeme.length() - 1);
+        addToken(TokenType.STRING, lexeme, value);
     }
 
     private void consumeNumber() {

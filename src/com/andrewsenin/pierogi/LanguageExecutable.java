@@ -77,18 +77,20 @@ public class LanguageExecutable implements IoManager {
 
     private void interpretFile(File sourceFile) {
         String source = readFileContents(sourceFile);
-
+        interpreter.interpret(source);
     }
 
     private void enterReplSession() {
         while (true) {
             print(INPUT_PROMPT);
             String source = requestInput();
-            if (source.equals("exit")) {
-                break;
+            // TODO: handle ctrl+d
+            // TODO: allow unmatched braces/parens
+            try {
+                List<NativeType> values = interpreter.interpret(source);
+                values.forEach(value -> print(value.makePrintRepresentation() + "\n"));
+            } catch (UnwindingException ignored) {
             }
-            List<NativeType> values = interpreter.interpret(source);
-            values.forEach(value -> print(value.makePrintRepresentation() + "\n"));
         }
     }
 

@@ -19,11 +19,11 @@ public class NilExpression extends LineNumbered implements Expression {
 	}
 
 	@Override
-	public boolean equals(Expression expression) {
-		if (!(expression instanceof NilExpression)) {
+	public boolean equals(Object object) {
+		if (!(object instanceof NilExpression)) {
 			return false;
 		}
-		NilExpression other = (NilExpression) expression;
+		NilExpression other = (NilExpression) object;
 		return true;
 	}
 

@@ -19,11 +19,11 @@ public class StringExpression extends LineNumbered implements Expression {
 	}
 
 	@Override
-	public boolean equals(Expression expression) {
-		if (!(expression instanceof StringExpression)) {
+	public boolean equals(Object object) {
+		if (!(object instanceof StringExpression)) {
 			return false;
 		}
-		StringExpression other = (StringExpression) expression;
+		StringExpression other = (StringExpression) object;
 		return value.equals(other.value);
 	}
 

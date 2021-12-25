@@ -19,11 +19,11 @@ public class TrueExpression extends LineNumbered implements Expression {
 	}
 
 	@Override
-	public boolean equals(Expression expression) {
-		if (!(expression instanceof TrueExpression)) {
+	public boolean equals(Object object) {
+		if (!(object instanceof TrueExpression)) {
 			return false;
 		}
-		TrueExpression other = (TrueExpression) expression;
+		TrueExpression other = (TrueExpression) object;
 		return true;
 	}
 

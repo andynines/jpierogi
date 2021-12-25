@@ -16,11 +16,11 @@ public class ExponentExpression extends Binary implements Expression {
 	}
 
 	@Override
-	public boolean equals(Expression expression) {
-		if (!(expression instanceof ExponentExpression)) {
+	public boolean equals(Object object) {
+		if (!(object instanceof ExponentExpression)) {
 			return false;
 		}
-		ExponentExpression other = (ExponentExpression) expression;
+		ExponentExpression other = (ExponentExpression) object;
 		return left.equals(other.left) && right.equals(other.right);
 	}
 }

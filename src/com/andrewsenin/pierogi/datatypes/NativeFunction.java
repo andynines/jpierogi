@@ -1,6 +1,6 @@
 package com.andrewsenin.pierogi.datatypes;
 
-public class NativeLambda implements NativeType {
+public class NativeFunction implements NativeType {
     @Override
     public boolean equals(NativeType other) {
         // TODO: define me

@@ -16,11 +16,11 @@ public class GreaterThanExpression extends Binary implements Expression {
 	}
 
 	@Override
-	public boolean equals(Expression expression) {
-		if (!(expression instanceof GreaterThanExpression)) {
+	public boolean equals(Object object) {
+		if (!(object instanceof GreaterThanExpression)) {
 			return false;
 		}
-		GreaterThanExpression other = (GreaterThanExpression) expression;
+		GreaterThanExpression other = (GreaterThanExpression) object;
 		return left.equals(other.left) && right.equals(other.right);
 	}
 }

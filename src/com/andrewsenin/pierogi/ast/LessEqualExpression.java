@@ -16,11 +16,11 @@ public class LessEqualExpression extends Binary implements Expression {
 	}
 
 	@Override
-	public boolean equals(Expression expression) {
-		if (!(expression instanceof LessEqualExpression)) {
+	public boolean equals(Object object) {
+		if (!(object instanceof LessEqualExpression)) {
 			return false;
 		}
-		LessEqualExpression other = (LessEqualExpression) expression;
+		LessEqualExpression other = (LessEqualExpression) object;
 		return left.equals(other.left) && right.equals(other.right);
 	}
 }

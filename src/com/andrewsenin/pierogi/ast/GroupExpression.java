@@ -16,11 +16,11 @@ public class GroupExpression extends Unary implements Expression {
 	}
 
 	@Override
-	public boolean equals(Expression expression) {
-		if (!(expression instanceof GroupExpression)) {
+	public boolean equals(Object object) {
+		if (!(object instanceof GroupExpression)) {
 			return false;
 		}
-		GroupExpression other = (GroupExpression) expression;
+		GroupExpression other = (GroupExpression) object;
 		return inside.equals(other.inside);
 	}
 }

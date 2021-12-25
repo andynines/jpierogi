@@ -16,11 +16,11 @@ public class NotExpression extends Unary implements Expression {
 	}
 
 	@Override
-	public boolean equals(Expression expression) {
-		if (!(expression instanceof NotExpression)) {
+	public boolean equals(Object object) {
+		if (!(object instanceof NotExpression)) {
 			return false;
 		}
-		NotExpression other = (NotExpression) expression;
+		NotExpression other = (NotExpression) object;
 		return inside.equals(other.inside);
 	}
 }

@@ -16,11 +16,11 @@ public class OrExpression extends Binary implements Expression {
 	}
 
 	@Override
-	public boolean equals(Expression expression) {
-		if (!(expression instanceof OrExpression)) {
+	public boolean equals(Object object) {
+		if (!(object instanceof OrExpression)) {
 			return false;
 		}
-		OrExpression other = (OrExpression) expression;
+		OrExpression other = (OrExpression) object;
 		return left.equals(other.left) && right.equals(other.right);
 	}
 }

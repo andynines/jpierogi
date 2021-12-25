@@ -16,11 +16,11 @@ public class ConcatenationExpression extends Binary implements Expression {
 	}
 
 	@Override
-	public boolean equals(Expression expression) {
-		if (!(expression instanceof ConcatenationExpression)) {
+	public boolean equals(Object object) {
+		if (!(object instanceof ConcatenationExpression)) {
 			return false;
 		}
-		ConcatenationExpression other = (ConcatenationExpression) expression;
+		ConcatenationExpression other = (ConcatenationExpression) object;
 		return left.equals(other.left) && right.equals(other.right);
 	}
 }

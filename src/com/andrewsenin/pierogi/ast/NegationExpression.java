@@ -16,11 +16,11 @@ public class NegationExpression extends Unary implements Expression {
 	}
 
 	@Override
-	public boolean equals(Expression expression) {
-		if (!(expression instanceof NegationExpression)) {
+	public boolean equals(Object object) {
+		if (!(object instanceof NegationExpression)) {
 			return false;
 		}
-		NegationExpression other = (NegationExpression) expression;
+		NegationExpression other = (NegationExpression) object;
 		return inside.equals(other.inside);
 	}
 }

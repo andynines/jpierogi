@@ -9,6 +9,7 @@ public abstract class AstVisitor<T> {
 	public abstract T visit(ListExpression listExpression);
 	public abstract T visit(IdentifierExpression identifierExpression);
 	public abstract T visit(DefinitionExpression definitionExpression);
+	public abstract T visit(IfExpression ifExpression);
 	public abstract T visit(GroupExpression groupExpression);
 	public abstract T visit(NegationExpression negationExpression);
 	public abstract T visit(NotExpression notExpression);

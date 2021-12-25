@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class ParserTest {
     @Test
@@ -104,11 +103,11 @@ public class ParserTest {
         assertEquals(new ListExpression(Arrays.asList(numeralOf(5), numeralOf(6))), ast);
         ast = parseSingleLine("[5, 6, 7, 8, 9, 10]");
         assertEquals(new ListExpression(Arrays.asList(numeralOf(5), numeralOf(6), numeralOf(7), numeralOf(8), numeralOf(9), numeralOf(10))), ast);
-        ast = parseSingleLine("[\"hello\", 4+5, [[3]], ---006.7]");
+        ast = parseSingleLine("[\"hello\", 4+5, [[3, 9]], ---006.7]");
         assertEquals(new ListExpression(Arrays.asList(
                 new StringExpression("hello"),
                 new AdditionExpression(numeralOf(4), numeralOf(5)),
-                new ListExpression(Collections.singletonList(new ListExpression(Collections.singletonList(numeralOf(3))))),
+                new ListExpression(Collections.singletonList(new ListExpression(Arrays.asList(numeralOf(3), numeralOf(9))))),
                 new NegationExpression(new NegationExpression(new NegationExpression(numeralOf(6.7))))
         )), ast);
     }
@@ -160,6 +159,12 @@ public class ParserTest {
         assertEquals(new DefinitionExpression("x", numeralOf(5)), ast);
     }
 
+    @Test
+    void parse_simple_if() {
+        Expression ast = parseSingleLine("if true { 1 } else { 0 }");
+        assertEquals(new IfExpression(new TrueExpression(), Collections.singletonList(numeralOf(1)), Collections.singletonList(numeralOf(0))), ast);
+    }
+
 //    @Test
 //    void reject_leading_decimal_point() {
 //        Expression ast = parseSource(".123");
@@ -175,18 +180,12 @@ public class ParserTest {
         Parser parser = new Parser(tokens, new DummyIoManager());
         return parser.parseTokens().get(0);
     }
-
-    private void expectSingleNode(String source, Class<?> nodeType) {
-        Expression ast = parseSingleLine(source);
-        assertSame(nodeType, ast.getClass());
-    }
 }
 
 // TODO: (hello = 5) = 6 should be an error
 // Reject leading decimal points like .123 and trailing ones like 456.
 // unmatched paren error
 // should reject [1,2,3,]
-// test unclosed parenthesis
 // nest existing operators, verify precedences
 // nest list literal values
 // identifier 123abc should cause error
