@@ -165,6 +165,17 @@ public class ParserTest {
         assertEquals(new IfExpression(new TrueExpression(), Collections.singletonList(numeralOf(1)), Collections.singletonList(numeralOf(0))), ast);
     }
 
+    @Test
+    void parse_simple_call() {
+        Expression ast;
+        ast = parseSingleLine("function()");
+        assertEquals(new CallExpression("function", Collections.emptyList()), ast);
+        ast = parseSingleLine("function(1)");
+        assertEquals(new CallExpression("function", Collections.singletonList(numeralOf(1))), ast);
+        ast = parseSingleLine("function(1, 2, 3)");
+        assertEquals(new CallExpression("function", Arrays.asList(numeralOf(1), numeralOf(2), numeralOf(3))), ast);
+    }
+
 //    @Test
 //    void reject_leading_decimal_point() {
 //        Expression ast = parseSource(".123");

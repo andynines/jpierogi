@@ -1,13 +1,13 @@
 package com.andrewsenin.pierogi.interpreter;
 
-import com.andrewsenin.pierogi.datatypes.NativeType;
+import com.andrewsenin.pierogi.datatypes.NativeData;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class Frame {
 
-    private final Map<String, NativeType> bindings = new HashMap<>();
+    private final Map<String, NativeData> bindings = new HashMap<>();
     private final Frame parent;
 
     public Frame(Frame parent) {
@@ -18,14 +18,14 @@ public class Frame {
         return parent;
     }
 
-    public NativeType lookUpValueOf(String symbol) {
+    public NativeData lookUpValueOf(String symbol) {
         if (bindings.containsKey(symbol)) {
             return bindings.get(symbol);
         }
         return null;
     }
 
-    public void addBinding(String symbol, NativeType value) {
+    public void addBinding(String symbol, NativeData value) {
         bindings.put(symbol, value);
     }
 }

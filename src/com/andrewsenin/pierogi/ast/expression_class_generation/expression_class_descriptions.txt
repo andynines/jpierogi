@@ -4,6 +4,7 @@ unique False
 unique Number Double value
 unique String String value
 unique List java.util.List<Expression> contents
+unique Call String symbol java.util.List<Expression> arguments
 
 base Unary Expression inside
 derived Group Unary
@@ -30,4 +31,4 @@ derived Cons Binary
 unique Identifier String symbol
 unique Definition String symbol Expression definition
 unique If Expression condition java.util.List<Expression> consequent java.util.List<Expression> alternative
-
+unique Function java.util.List<String> parameters java.util.List<Expression> definition

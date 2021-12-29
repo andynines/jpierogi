@@ -82,7 +82,7 @@ def generate_getters(fields: Dict[str, str]) -> str:
 
 
 def generate_visitors(class_names: List[str]) -> str:
-    visitor_template = "public abstract T visit({name} {uncapitalized_name});"
+    visitor_template = "T visit({name} {uncapitalized_name});"
     return "\n\t".join([
         visitor_template.format(
             name=class_name,
@@ -95,7 +95,7 @@ def generate_visitor_class_file(class_names: List[str], output_path: pathlib.Pat
     visitor_class_template = """\
 package com.andrewsenin.pierogi.ast;
 
-public abstract class AstVisitor<T> {{
+public interface AstVisitor<T> {{
 \t{visitors}
 }}"""
     with open(output_path.joinpath("AstVisitor.java"), "w") as visitor_file:

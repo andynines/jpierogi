@@ -8,6 +8,7 @@ public interface IoManager {
 
     String requestInput();
 
+    // TODO: rename these methods and orthogonalize them
     UnwindingException reportError(ErrorType errorType, String nearestLexeme, int lineNumber);
 
     UnwindingException reportError(ErrorType errorType, Token nearestToken, int lineNumber);

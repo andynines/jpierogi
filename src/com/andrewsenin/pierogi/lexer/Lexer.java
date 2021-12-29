@@ -20,6 +20,11 @@ public class Lexer {
             "if", TokenType.IF,
             "else", TokenType.ELSE
     );
+    private static final Map<Character, Character> ESCAPE_SEQUENCES = Map.of(
+            'n', '\n',
+            '\"', '\"',
+            '\\', '\\'
+    );
 
     private final String source;
     private final IoManager ioManager;
@@ -115,9 +120,9 @@ public class Lexer {
                 break;
             default:
                 if (Character.isDigit(currentCharacter)) consumeNumber();
-                else if (Character.isLetter(currentCharacter)) consumeWord();
+                else if (isValidIdentifierFirstCharacter(currentCharacter)) consumeWord();
                 else
-                    ioManager.reportError(ErrorType.UNRECOGNIZED_CHARACTER, getCurrentLexeme(), lineNumber);
+                    throw ioManager.reportError(ErrorType.UNRECOGNIZED_CHARACTER, getCurrentLexeme(), lineNumber);
         }
     }
 
@@ -159,16 +164,27 @@ public class Lexer {
     }
 
     private void consumeString() {
-        // TODO: accept escape sequences for at least \n and \"
-        while (peekCurrentCharacter() != '"') {
+        boolean nextCharacterIsEscaped = false;
+        StringBuilder stringBuilder = new StringBuilder();
+        while (peekCurrentCharacter() != '"' || nextCharacterIsEscaped) {
             if (isAtEnd()) throw ioManager.reportError(ErrorType.UNTERMINATED_STRING, getCurrentLexeme(), lineNumber);
-            if (peekCurrentCharacter() == '\n') lineNumber++;
+            if (nextCharacterIsEscaped) {
+                if (ESCAPE_SEQUENCES.containsKey(peekCurrentCharacter())) {
+                    stringBuilder.append(ESCAPE_SEQUENCES.get(peekCurrentCharacter()));
+                    nextCharacterIsEscaped = false;
+                } else {
+                    throw ioManager.reportError(ErrorType.UNKNOWN_ESCAPE_SEQUENCE, "\\" + peekCurrentCharacter(), lineNumber);
+                }
+            } else if (peekCurrentCharacter() == '\\') {
+                nextCharacterIsEscaped = true;
+            } else {
+                if (peekCurrentCharacter() == '\n') lineNumber++;
+                stringBuilder.append(peekCurrentCharacter());
+            }
             consumeCurrentCharacter();
         }
         consumeCurrentCharacter(); // Consume closing '"'
-        String lexeme = getCurrentLexeme();
-        String value = lexeme.substring(1, lexeme.length() - 1);
-        addToken(TokenType.STRING, lexeme, value);
+        addToken(TokenType.STRING, getCurrentLexeme(), stringBuilder.toString());
     }
 
     private void consumeNumber() {
@@ -183,14 +199,18 @@ public class Lexer {
     }
 
     private void consumeWord() {
-        while (isIdentifierCharacter(peekCurrentCharacter())) consumeCurrentCharacter();
+        while (isValidIdentifierCharacter(peekCurrentCharacter())) consumeCurrentCharacter();
         String lexeme = getCurrentLexeme();
         if (KEYWORDS.containsKey(lexeme)) addToken(KEYWORDS.get(lexeme));
         else
             addToken(TokenType.IDENTIFIER, lexeme, null);
     }
 
-    private static boolean isIdentifierCharacter(char c) {
-        return Character.isLetterOrDigit(c) || c == '_';
+    private static boolean isValidIdentifierFirstCharacter(char c) {
+        return Character.isLetter(c) || c == '_';
+    }
+
+    private static boolean isValidIdentifierCharacter(char c) {
+        return isValidIdentifierFirstCharacter(c) || Character.isDigit(c);
     }
 }

@@ -2,23 +2,23 @@ package com.andrewsenin.pierogi.datatypes;
 
 import java.util.*;
 
-public class NativeList implements NativeType {
+public class NativeList implements NativeData {
 
-    private final Deque<NativeType> items;
+    private final Deque<NativeData> items;
 
-    public NativeList(Deque<NativeType> items) {
+    public NativeList(Deque<NativeData> items) {
         this.items = items;
     }
 
-    public NativeList cons(NativeType value) {
+    public NativeList cons(NativeData value) {
         // TODO: make this more efficient by homebrewing a linked list, and make sure it even works!
-        Deque<NativeType> newItems = items;
+        Deque<NativeData> newItems = items;
         newItems.addFirst(value);
         return new NativeList(newItems);
     }
 
     @Override
-    public boolean equals(NativeType other) {
+    public boolean equals(NativeData other) {
         if (!(other instanceof NativeList)) {
             return false;
         }
@@ -26,7 +26,7 @@ public class NativeList implements NativeType {
         if (items.size() != otherList.items.size()) {
             return false;
         }
-        Iterator<NativeType> iterator = items.iterator(), otherIterator = otherList.items.iterator();
+        Iterator<NativeData> iterator = items.iterator(), otherIterator = otherList.items.iterator();
         while (iterator.hasNext()) {
             if (!iterator.next().equals(otherIterator.next())) {
                 return false;

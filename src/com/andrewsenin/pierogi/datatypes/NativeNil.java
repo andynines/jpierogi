@@ -1,9 +1,9 @@
 package com.andrewsenin.pierogi.datatypes;
 
-public class NativeNil implements NativeType {
+public class NativeNil implements NativeData {
 
     @Override
-    public boolean equals(NativeType other) {
+    public boolean equals(NativeData other) {
         return other instanceof NativeNil;
     }
 

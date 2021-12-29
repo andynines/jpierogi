@@ -1,6 +1,6 @@
 package com.andrewsenin.pierogi.datatypes;
 
-public class NativeString implements NativeType {
+public class NativeString implements NativeData {
 
     private final String value;
 
@@ -13,7 +13,7 @@ public class NativeString implements NativeType {
     }
 
     @Override
-    public boolean equals(NativeType other) {
+    public boolean equals(NativeData other) {
         if (!(other instanceof NativeString)) {
             return false;
         }

@@ -1,6 +1,6 @@
 package com.andrewsenin.pierogi.datatypes;
 
-public class NativeBool implements NativeType {
+public class NativeBool implements NativeData {
 
     private final boolean value;
 
@@ -16,16 +16,8 @@ public class NativeBool implements NativeType {
         return new NativeBool(!value);
     }
 
-    public NativeBool and(NativeBool other) {
-        return new NativeBool(value && other.value);
-    }
-
-    public NativeBool or(NativeBool other) {
-        return new NativeBool(value || other.value);
-    }
-
     @Override
-    public boolean equals(NativeType other) {
+    public boolean equals(NativeData other) {
         if (!(other instanceof NativeBool)) {
             return false;
         }

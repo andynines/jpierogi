@@ -19,14 +19,5 @@ public class InterpreterTest {
 
     }
 
-    @Test
-    void what() {
-        List<Integer> l = new ArrayList<>(Arrays.asList(1, 2, 3));
-        List<Integer> m = l;
-        m.add(4);
-        assertEquals(Arrays.asList(1, 2, 3), l);
-        assertEquals(Arrays.asList(1, 2, 3, 4), m);
-    }
-
     // TODO: and and or short circuit
 }

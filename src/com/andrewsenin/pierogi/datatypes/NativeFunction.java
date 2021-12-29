@@ -1,14 +1,18 @@
 package com.andrewsenin.pierogi.datatypes;
 
-public class NativeFunction implements NativeType {
+import com.andrewsenin.pierogi.io.IoManager;
+
+import java.util.List;
+
+public abstract class NativeFunction implements NativeData {
+
+    public abstract NativeData call(List<NativeData> arguments, IoManager ioManager);
+
     @Override
-    public boolean equals(NativeType other) {
-        // TODO: define me
-        return false;
+    public boolean equals(NativeData other) {
+        return this == other;
     }
 
     @Override
-    public String makePrintRepresentation() {
-        return "<lambda>";
-    }
+    public abstract String makePrintRepresentation();
 }

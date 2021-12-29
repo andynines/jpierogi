@@ -1,19 +1,19 @@
 package com.andrewsenin.pierogi.interpreter;
 
-import com.andrewsenin.pierogi.datatypes.NativeType;
+import com.andrewsenin.pierogi.datatypes.NativeData;
 
 public class Environment {
 
-    private Frame currentFrame = new GlobalFrame();
+    private Frame currentFrame = new Frame(new BuiltinsFrame());
 
     public boolean hasDefinitionFor(String symbol) {
         return lookUpValueOf(symbol) != null;
     }
 
-    public NativeType lookUpValueOf(String symbol) {
+    public NativeData lookUpValueOf(String symbol) {
         Frame searchFrame = currentFrame;
         do {
-            NativeType lookupResult = searchFrame.lookUpValueOf(symbol);
+            NativeData lookupResult = searchFrame.lookUpValueOf(symbol);
             if (lookupResult != null) {
                 return lookupResult;
             }
@@ -22,7 +22,7 @@ public class Environment {
         return null;
     }
 
-    public void addBinding(String symbol, NativeType value) {
+    public void addBinding(String symbol, NativeData value) {
         currentFrame.addBinding(symbol, value);
     }
 

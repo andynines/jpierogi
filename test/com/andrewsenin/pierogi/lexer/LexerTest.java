@@ -3,6 +3,7 @@ package com.andrewsenin.pierogi.lexer;
 import com.andrewsenin.pierogi.io.ErrorType;
 import com.andrewsenin.pierogi.io.TestIoManager;
 import com.andrewsenin.pierogi.io.DummyIoManager;
+import com.andrewsenin.pierogi.io.UnwindingException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -13,8 +14,9 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class LexerTest { // TODO: ensure identifier like _leadingUnderscore is rejected
+public class LexerTest {
 
     @Test
     void read_eof_from_empty_source() {
@@ -171,20 +173,33 @@ public class LexerTest { // TODO: ensure identifier like _leadingUnderscore is r
 
     @Test
     void extract_contents_of_string_tokens() {
-        expectStringLexemeContents("\"string\"", "string");
-        expectStringLexemeContents("\"a string with spaces\"", "a string with spaces");
-        expectStringLexemeContents("\"string with 1 2 34 numbers\"", "string with 1 2 34 numbers");
-        expectStringLexemeContents("\"characters like Ʃ and £\"", "characters like Ʃ and £");
-        expectStringLexemeContents("\"a string\nwith multiple\nlines\"", "a string\nwith multiple\nlines");
+        expectStringTokenValue("\"string\"", "string");
+        expectStringTokenValue("\"a string with spaces\"", "a string with spaces");
+        expectStringTokenValue("\"string with 1 2 34 numbers\"", "string with 1 2 34 numbers");
+        expectStringTokenValue("\"characters like Ʃ and £\"", "characters like Ʃ and £");
+        expectStringTokenValue("\"a string\nwith multiple\nlines\"", "a string\nwith multiple\nlines");
+    }
+
+    @Test
+    void replace_escape_sequences() {
+        expectStringTokenValue("\"incoming line break:\\nfinished\"", "incoming line break:\nfinished");
+        expectStringTokenValue("\"incoming backslash: \\\\\"", "incoming backslash: \\");
+        expectStringTokenValue("\"incoming double quote: \\\"\"", "incoming double quote: \"");
+        expectStringTokenValue("\"Multiple \\\\ \\\"escape sequences\\\"\\nabove\"", "Multiple \\ \"escape sequences\"\nabove");
+    }
+
+    @Test
+    void report_error_for_unknown_escape_sequence() {
+        expectErrorType("\"What is a \\x?\"", ErrorType.UNKNOWN_ESCAPE_SEQUENCE);
     }
 
     @Test
     void extract_contents_of_number_tokens() {
-        expectNumberLexemeContents("123", 123);
-        expectNumberLexemeContents("000123", 123);
-        expectNumberLexemeContents("123.456", 123.456);
-        expectNumberLexemeContents("0.012500", 0.0125);
-        expectNumberLexemeContents("00001.23", 1.23);
+        expectNumberTokenValue("123", 123);
+        expectNumberTokenValue("000123", 123);
+        expectNumberTokenValue("123.456", 123.456);
+        expectNumberTokenValue("0.012500", 0.0125);
+        expectNumberTokenValue("00001.23", 1.23);
     }
 
     private void expectEof(String source) {
@@ -221,32 +236,32 @@ public class LexerTest { // TODO: ensure identifier like _leadingUnderscore is r
     private void expectErrorType(String source, ErrorType errorType) {
         TestIoManager ioManager = new TestIoManager();
         Lexer lexer = new Lexer(source, ioManager);
-        lexer.lexSource();
+        assertThrows(UnwindingException.class, lexer::lexSource);
         assertEquals(errorType, ioManager.getMostRecentErrorType());
     }
 
     private void expectErrorNearLexeme(String source, String lexeme) {
         TestIoManager ioManager = new TestIoManager();
         Lexer lexer = new Lexer(source, ioManager);
-        lexer.lexSource();
+        assertThrows(UnwindingException.class, lexer::lexSource);
         assertEquals(lexeme, ioManager.getMostRecentErrorLexeme());
     }
 
     private void expectErrorOnLine(String source, int lineNumber) {
         TestIoManager ioManager = new TestIoManager();
         Lexer lexer = new Lexer(source, ioManager);
-        lexer.lexSource();
+        assertThrows(UnwindingException.class, lexer::lexSource);
         assertEquals(lineNumber, ioManager.getMostRecentErrorLineNumber());
     }
 
-    private void expectStringLexemeContents(String source, String contents) {
+    private void expectStringTokenValue(String source, String value) {
         Lexer lexer = new Lexer(source, new DummyIoManager());
         List<Token> tokens = lexer.lexSource();
         assertEquals(2, tokens.size());
-        assertEquals(contents, tokens.get(0).getLiteralValue());
+        assertEquals(value, tokens.get(0).getLiteralValue());
     }
 
-    private void expectNumberLexemeContents(String source, double value) {
+    private void expectNumberTokenValue(String source, double value) {
         Lexer lexer = new Lexer(source, new DummyIoManager());
         List<Token> tokens = lexer.lexSource();
         assertEquals(2, tokens.size());

@@ -1,7 +1,7 @@
 package com.andrewsenin.pierogi.datatypes;
 
-public interface NativeType {
-    boolean equals(NativeType other);
+public interface NativeData {
+    boolean equals(NativeData other);
 
     String makePrintRepresentation();
 }

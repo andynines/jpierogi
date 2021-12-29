@@ -1,24 +1,21 @@
 package com.andrewsenin.pierogi;
 
-import com.andrewsenin.pierogi.ast.Expression;
-import com.andrewsenin.pierogi.datatypes.NativeType;
+import com.andrewsenin.pierogi.datatypes.NativeData;
 import com.andrewsenin.pierogi.interpreter.Interpreter;
 import com.andrewsenin.pierogi.io.*;
-import com.andrewsenin.pierogi.lexer.Token;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Scanner;
 
-public class LanguageExecutable implements IoManager {
+public class LanguageExecutable {
 
     private static final String EXECUTABLE_NAME = "pierogi";
     private static final String INPUT_PROMPT = EXECUTABLE_NAME + ">";
 
-    private final Scanner inputScanner = new Scanner(System.in);
+    private final IoManager ioManager;
     private final Interpreter interpreter;
 
     public static void main(String[] args) {
@@ -26,7 +23,9 @@ public class LanguageExecutable implements IoManager {
             System.err.println("Usage: " + EXECUTABLE_NAME + " [script]");
             System.exit(1);
         }
-        LanguageExecutable languageExecutable = new LanguageExecutable();
+        IoManager ioManager = new ConsoleIoManager();
+        Interpreter interpreter = new Interpreter(ioManager);
+        LanguageExecutable languageExecutable = new LanguageExecutable(ioManager, interpreter);
         if (args.length == 1) {
             File sourceFile = new File(args[0]);
             assertFileExists(sourceFile);
@@ -36,36 +35,9 @@ public class LanguageExecutable implements IoManager {
         }
     }
 
-    public LanguageExecutable() {
-        interpreter = new Interpreter(this);
-    }
-
-    @Override
-    public void print(String message) {
-        System.out.print(message);
-    }
-
-    @Override
-    public String requestInput() {
-        return inputScanner.nextLine();
-    }
-
-    @Override
-    public UnwindingException reportError(ErrorType errorType, String nearestLexeme, int lineNumber) {
-        printErrorMessage(errorType, nearestLexeme, lineNumber);
-        return new StaticError();
-    }
-
-    @Override
-    public UnwindingException reportError(ErrorType errorType, Token nearestToken, int lineNumber) {
-        printErrorMessage(errorType, nearestToken.getLexeme(), lineNumber);
-        return new StaticError();
-    }
-
-    @Override
-    public UnwindingException reportError(ErrorType errorType, Expression nearestExpression, int lineNumber) {
-        printErrorMessage(errorType, nearestExpression.toString(), lineNumber);
-        return new RuntimeError();
+    public LanguageExecutable(IoManager ioManager, Interpreter interpreter) {
+        this.ioManager = ioManager;
+        this.interpreter = interpreter;
     }
 
     private static void assertFileExists(File file) {
@@ -82,20 +54,16 @@ public class LanguageExecutable implements IoManager {
 
     private void enterReplSession() {
         while (true) {
-            print(INPUT_PROMPT);
-            String source = requestInput();
+            ioManager.print(INPUT_PROMPT);
+            String source = ioManager.requestInput();
             // TODO: handle ctrl+d
             // TODO: allow unmatched braces/parens
             try {
-                List<NativeType> values = interpreter.interpret(source);
-                values.forEach(value -> print(value.makePrintRepresentation() + "\n"));
+                List<NativeData> values = interpreter.interpret(source);
+                values.forEach(value -> ioManager.print(value.makePrintRepresentation() + "\n"));
             } catch (UnwindingException ignored) {
             }
         }
-    }
-
-    private void printErrorMessage(ErrorType errorType, String near, int lineNumber) {
-        System.err.println("Error on line " + lineNumber + ": " + errorType.name() + " near \"" + near + "\"");
     }
 
     private static String readFileContents(File file) {

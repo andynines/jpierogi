@@ -1,11 +1,15 @@
 package com.andrewsenin.pierogi.datatypes;
 
-public class NativeNumber implements NativeType {
+public class NativeNumber implements NativeData {
 
     private final double value;
 
     public NativeNumber(double value) {
         this.value = value;
+    }
+
+    public boolean isZeroDivisionResult() {
+        return Double.isNaN(value) || value == Double.POSITIVE_INFINITY || value == Double.NEGATIVE_INFINITY;
     }
 
     public NativeNumber negate() {
@@ -28,7 +32,7 @@ public class NativeNumber implements NativeType {
         return new NativeNumber(value / other.value);
     }
 
-    public NativeNumber exponentiate(NativeNumber other) {
+    public NativeNumber raise(NativeNumber other) {
         return new NativeNumber(Math.pow(value, other.value));
     }
 
@@ -49,7 +53,7 @@ public class NativeNumber implements NativeType {
     }
 
     @Override
-    public boolean equals(NativeType other) {
+    public boolean equals(NativeData other) {
         if (!(other instanceof NativeNumber)) {
             return false;
         }
