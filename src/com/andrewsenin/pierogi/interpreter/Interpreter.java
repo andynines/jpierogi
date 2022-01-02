@@ -19,10 +19,11 @@ import java.util.function.BiFunction;
 public class Interpreter implements AstVisitor<NativeData> {
 
     private final IoManager ioManager;
-    private final Environment environment = new Environment();
+    private final Environment environment;
 
-    public Interpreter(IoManager ioManager) {
+    public Interpreter(IoManager ioManager, Environment environment) {
         this.ioManager = ioManager;
+        this.environment = environment;
     }
 
     public List<NativeData> interpret(String source) {
@@ -30,6 +31,10 @@ public class Interpreter implements AstVisitor<NativeData> {
         List<Token> tokens = lexer.lexSource();
         Parser parser = new Parser(tokens, ioManager);
         List<Expression> expressions = parser.parseTokens();
+        return interpret(expressions);
+    }
+
+    public List<NativeData> interpret(List<Expression> expressions) {
         List<NativeData> values = new ArrayList<>();
         expressions.forEach(expression -> values.add(evaluate(expression)));
         return values;
@@ -232,7 +237,10 @@ public class Interpreter implements AstVisitor<NativeData> {
 
     @Override
     public NativeData visit(FunctionExpression functionExpression) {
-        return new NativeNil();
+        // TODO: can't do recursion yet
+        Environment closure = environment.makeClosure();
+        UserFunction userFunction = new UserFunction(functionExpression.getParameters(), functionExpression.getDefinition(), closure);
+        return userFunction;
     }
 
     @Override

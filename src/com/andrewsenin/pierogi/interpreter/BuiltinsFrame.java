@@ -7,9 +7,12 @@ import com.andrewsenin.pierogi.io.IoManager;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.Random;
 import java.util.function.Supplier;
 
 public class BuiltinsFrame extends Frame {
+
+    private final Random random = new Random(); // TODO: make thread local if adding multithreading support
 
     public BuiltinsFrame() {
         super(null);
@@ -28,6 +31,8 @@ public class BuiltinsFrame extends Frame {
         addBinding("input", new BuiltinFunction(0, (arguments, ioManager) -> new NativeString(ioManager.requestInput())));
 
         addBinding("time", new BuiltinFunction(0, (arguments, ioManager) -> new NativeNumber(System.currentTimeMillis() / 1000.0)));
+
+        addBinding("random", new BuiltinFunction(0, (arguments, ioManager) -> new NativeNumber(random.nextDouble())));
 
         addBinding("pi", new NativeNumber(Math.PI));
         addBinding("exp", new BuiltinFunction(1, (arguments, ioManager) -> makeTypeSensitive(ioManager, () -> new NativeNumber(Math.exp(((NativeNumber) arguments.get(0)).getValue())))));

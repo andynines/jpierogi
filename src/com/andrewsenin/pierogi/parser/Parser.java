@@ -75,7 +75,7 @@ public class Parser { // TODO: include line numbers on every expression
 
     private Expression parseDefinition() {
         Token possibleIdentifierToken = peekCurrentToken();
-        Expression left = parseIf();
+        Expression left = parseControl();
         if (consumeCurrentIfMatchesAny(TokenType.EQUAL)) {
             Expression value = parseDefinition();
             if (left instanceof IdentifierExpression) {
@@ -86,7 +86,7 @@ public class Parser { // TODO: include line numbers on every expression
         return left;
     }
 
-    private Expression parseIf() {
+    private Expression parseControl() {
         if (consumeCurrentIfMatchesAny(TokenType.IF)) {
             int lineNumber = peekPreviousToken().getLineNumber();
             Expression condition = parseNextExpression();
@@ -94,6 +94,17 @@ public class Parser { // TODO: include line numbers on every expression
             consumeCurrentIfMatchesElseError(TokenType.ELSE, ErrorType.UNEXPECTED_TOKEN);
             List<Expression> alternative = parseBlock();
             return new IfExpression(condition, consequent, alternative, lineNumber);
+        }
+        if (consumeCurrentIfMatchesAny(TokenType.BACKSLASH)) {
+            List<String> parameters = new ArrayList<>();
+            while (true) {
+                if (matchesCurrentTokenType(TokenType.LEFT_BRACE)) return new FunctionExpression(parameters, parseBlock());
+                consumeCurrentIfMatchesElseError(TokenType.IDENTIFIER, ErrorType.MISSING_IDENTIFIER);
+                parameters.add(peekPreviousToken().getLexeme());
+                if (consumeCurrentIfMatchesAny(TokenType.COMMA)) continue;
+                if (matchesCurrentTokenType(TokenType.LEFT_BRACE)) return new FunctionExpression(parameters, parseBlock());
+                throw reportError(ErrorType.UNEXPECTED_TOKEN, peekCurrentToken());
+            }
         }
         return parseLogic();
     }

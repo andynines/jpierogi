@@ -27,7 +27,7 @@ public class BuiltinFunction extends NativeFunction {
 
     @Override
     public String makeValueRepresentation() {
-        return "<builtin function>";
+        return "<builtin function/" + arity + ">";
     }
 
     @Override

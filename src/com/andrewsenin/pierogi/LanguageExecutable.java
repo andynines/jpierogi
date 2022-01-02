@@ -1,6 +1,9 @@
 package com.andrewsenin.pierogi;
 
 import com.andrewsenin.pierogi.datatypes.NativeData;
+import com.andrewsenin.pierogi.interpreter.BuiltinsFrame;
+import com.andrewsenin.pierogi.interpreter.Environment;
+import com.andrewsenin.pierogi.interpreter.Frame;
 import com.andrewsenin.pierogi.interpreter.Interpreter;
 import com.andrewsenin.pierogi.io.*;
 
@@ -24,7 +27,7 @@ public class LanguageExecutable {
             System.exit(1);
         }
         IoManager ioManager = new ConsoleIoManager();
-        Interpreter interpreter = new Interpreter(ioManager);
+        Interpreter interpreter = new Interpreter(ioManager, new Environment(new Frame(new BuiltinsFrame())));
         LanguageExecutable languageExecutable = new LanguageExecutable(ioManager, interpreter);
         if (args.length == 1) {
             File sourceFile = new File(args[0]);
@@ -48,8 +51,11 @@ public class LanguageExecutable {
     }
 
     private void interpretFile(File sourceFile) {
-        String source = readFileContents(sourceFile);
-        interpreter.interpret(source);
+        try {
+            String source = readFileContents(sourceFile);
+            interpreter.interpret(source);
+        } catch (UnwindingException ignored) {
+        }
     }
 
     private void enterReplSession() {

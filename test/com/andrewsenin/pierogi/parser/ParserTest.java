@@ -176,6 +176,12 @@ public class ParserTest {
         assertEquals(new CallExpression(new IdentifierExpression("function"), Arrays.asList(numeralOf(1), numeralOf(2), numeralOf(3))), ast);
     }
 
+    @Test
+    void parse_simple_function() {
+        Expression ast = parseSingleLine("\\x { x }");
+        assertEquals(new FunctionExpression(Collections.singletonList("x"), Collections.singletonList(new IdentifierExpression("x"))), ast);
+    }
+
 //    @Test
 //    void reject_leading_decimal_point() {
 //        Expression ast = parseSource(".123");
