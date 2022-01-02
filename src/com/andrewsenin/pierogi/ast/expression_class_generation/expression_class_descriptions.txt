@@ -4,7 +4,7 @@ unique False
 unique Number Double value
 unique String String value
 unique List java.util.List<Expression> contents
-unique Call String symbol java.util.List<Expression> arguments
+unique Call Expression callee java.util.List<Expression> arguments
 
 base Unary Expression inside
 derived Group Unary

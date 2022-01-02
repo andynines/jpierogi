@@ -169,11 +169,11 @@ public class ParserTest {
     void parse_simple_call() {
         Expression ast;
         ast = parseSingleLine("function()");
-        assertEquals(new CallExpression("function", Collections.emptyList()), ast);
+        assertEquals(new CallExpression(new IdentifierExpression("function"), Collections.emptyList()), ast);
         ast = parseSingleLine("function(1)");
-        assertEquals(new CallExpression("function", Collections.singletonList(numeralOf(1))), ast);
+        assertEquals(new CallExpression(new IdentifierExpression("function"), Collections.singletonList(numeralOf(1))), ast);
         ast = parseSingleLine("function(1, 2, 3)");
-        assertEquals(new CallExpression("function", Arrays.asList(numeralOf(1), numeralOf(2), numeralOf(3))), ast);
+        assertEquals(new CallExpression(new IdentifierExpression("function"), Arrays.asList(numeralOf(1), numeralOf(2), numeralOf(3))), ast);
     }
 
 //    @Test

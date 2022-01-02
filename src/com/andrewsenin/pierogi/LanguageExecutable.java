@@ -60,7 +60,7 @@ public class LanguageExecutable {
             // TODO: allow unmatched braces/parens
             try {
                 List<NativeData> values = interpreter.interpret(source);
-                values.forEach(value -> ioManager.print(value.makePrintRepresentation() + "\n"));
+                values.forEach(value -> ioManager.print(value.makeValueRepresentation() + "\n"));
             } catch (UnwindingException ignored) {
             }
         }

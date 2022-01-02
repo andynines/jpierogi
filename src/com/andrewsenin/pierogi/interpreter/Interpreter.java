@@ -5,6 +5,7 @@ import com.andrewsenin.pierogi.datatypes.*;
 import com.andrewsenin.pierogi.io.ErrorType;
 import com.andrewsenin.pierogi.io.FunctionIoManagerWrapper;
 import com.andrewsenin.pierogi.io.IoManager;
+import com.andrewsenin.pierogi.io.UnwindingException;
 import com.andrewsenin.pierogi.lexer.Lexer;
 import com.andrewsenin.pierogi.lexer.Token;
 import com.andrewsenin.pierogi.parser.Parser;
@@ -65,7 +66,7 @@ public class Interpreter implements AstVisitor<NativeData> {
     public NativeData visit(IdentifierExpression identifierExpression) {
         String symbol = identifierExpression.getSymbol();
         if (!environment.hasDefinitionFor(symbol)) {
-            throw ioManager.reportError(ErrorType.UNDEFINED_SYMBOL, identifierExpression, identifierExpression.getLineNumber());
+            throw ioManager.reportRuntimeError(ErrorType.UNDEFINED_SYMBOL, symbol, identifierExpression.getLineNumber());
         }
         return environment.lookUpValueOf(symbol);
     }
@@ -86,67 +87,67 @@ public class Interpreter implements AstVisitor<NativeData> {
     public NativeData visit(NegationExpression negationExpression) {
         NativeData insideValue = evaluate(negationExpression.getInside());
         if (!(insideValue instanceof NativeNumber)) {
-            throw ioManager.reportError(ErrorType.INCOMPATIBLE_TYPES, negationExpression, negationExpression.getLineNumber());
+            throw reportErrorAtExpression(ErrorType.INCOMPATIBLE_TYPES, negationExpression);
         }
-        return ((NativeNumber) insideValue).negate();
+        return new NativeNumber(-((NativeNumber) insideValue).getValue());
     }
 
     @Override
     public NativeData visit(NotExpression notExpression) {
         NativeData insideValue = evaluate(notExpression.getInside());
         if (!(insideValue instanceof NativeBool)) {
-            throw ioManager.reportError(ErrorType.INCOMPATIBLE_TYPES, notExpression, notExpression.getLineNumber());
+            throw reportErrorAtExpression(ErrorType.INCOMPATIBLE_TYPES, notExpression);
         }
-        return ((NativeBool) insideValue).negate();
+        return new NativeBool(!((NativeBool) insideValue).getValue());
     }
 
     @Override
     public NativeData visit(AdditionExpression additionExpression) {
-        return evaluateBinaryNumericExpression(additionExpression, NativeNumber::add);
+        return evaluateBinaryNumericExpression(additionExpression, (a, b) -> new NativeNumber(a.getValue() + b.getValue()));
     }
 
     @Override
     public NativeData visit(SubtractionExpression subtractionExpression) {
-        return evaluateBinaryNumericExpression(subtractionExpression, NativeNumber::subtract);
+        return evaluateBinaryNumericExpression(subtractionExpression, (a, b) -> new NativeNumber(a.getValue() - b.getValue()));
     }
 
     @Override
     public NativeData visit(MultiplicationExpression multiplicationExpression) {
-        return evaluateBinaryNumericExpression(multiplicationExpression, NativeNumber::multiply);
+        return evaluateBinaryNumericExpression(multiplicationExpression, (a, b) -> new NativeNumber(a.getValue() * b.getValue()));
     }
 
     @Override
     public NativeData visit(DivisionExpression divisionExpression) {
-        NativeNumber result = (NativeNumber) evaluateBinaryNumericExpression(divisionExpression, NativeNumber::divide);
-        if (result.isZeroDivisionResult()) {
-            throw ioManager.reportError(ErrorType.DIVISION_BY_ZERO, divisionExpression, divisionExpression.getLineNumber());
+        NativeNumber result = (NativeNumber) evaluateBinaryNumericExpression(divisionExpression, (a, b) -> new NativeNumber(a.getValue() / b.getValue()));
+        if (result.isInvalid()) {
+            throw reportErrorAtExpression(ErrorType.DIVISION_BY_ZERO, divisionExpression);
         }
         return result;
     }
 
     @Override
     public NativeData visit(ExponentExpression exponentExpression) {
-        return evaluateBinaryNumericExpression(exponentExpression, NativeNumber::raise);
+        return evaluateBinaryNumericExpression(exponentExpression, (a, b) -> new NativeNumber(Math.pow(a.getValue(), b.getValue())));
     }
 
     @Override
     public NativeData visit(LessThanExpression lessThanExpression) {
-        return evaluateBinaryNumericExpression(lessThanExpression, NativeNumber::lessThan);
+        return evaluateBinaryNumericExpression(lessThanExpression, (a, b) -> new NativeBool(a.getValue() < b.getValue()));
     }
 
     @Override
     public NativeData visit(GreaterThanExpression greaterThanExpression) {
-        return evaluateBinaryNumericExpression(greaterThanExpression, NativeNumber::greaterThan);
+        return evaluateBinaryNumericExpression(greaterThanExpression, (a, b) -> new NativeBool(a.getValue() > b.getValue()));
     }
 
     @Override
     public NativeData visit(LessEqualExpression lessEqualExpression) {
-        return evaluateBinaryNumericExpression(lessEqualExpression, NativeNumber::lessEqual);
+        return evaluateBinaryNumericExpression(lessEqualExpression, (a, b) -> new NativeBool(a.getValue() <= b.getValue()));
     }
 
     @Override
     public NativeData visit(GreaterEqualExpression greaterEqualExpression) {
-        return evaluateBinaryNumericExpression(greaterEqualExpression, NativeNumber::greaterEqual);
+        return evaluateBinaryNumericExpression(greaterEqualExpression, (a, b) -> new NativeBool(a.getValue() >= b.getValue()));
     }
 
     @Override
@@ -163,32 +164,32 @@ public class Interpreter implements AstVisitor<NativeData> {
     public NativeData visit(AndExpression andExpression) {
         NativeData leftValue = evaluate(andExpression.getLeft());
         if (!(leftValue instanceof NativeBool)) {
-            throw ioManager.reportError(ErrorType.INCOMPATIBLE_TYPES, andExpression, andExpression.getLineNumber());
+            throw reportErrorAtExpression(ErrorType.INCOMPATIBLE_TYPES, andExpression);
         }
-        if (!((NativeBool) leftValue).isTrue()) {
+        if (!((NativeBool) leftValue).getValue()) {
             return new NativeBool(false);
         }
         NativeData rightValue = evaluate(andExpression.getRight());
         if (!(rightValue instanceof NativeBool)) {
-            throw ioManager.reportError(ErrorType.INCOMPATIBLE_TYPES, andExpression, andExpression.getLineNumber());
+            throw reportErrorAtExpression(ErrorType.INCOMPATIBLE_TYPES, andExpression);
         }
-        return new NativeBool(((NativeBool) rightValue).isTrue());
+        return new NativeBool(((NativeBool) rightValue).getValue());
     }
 
     @Override
     public NativeData visit(OrExpression orExpression) {
         NativeData leftValue = evaluate(orExpression.getLeft());
         if (!(leftValue instanceof NativeBool)) {
-            throw ioManager.reportError(ErrorType.INCOMPATIBLE_TYPES, orExpression, orExpression.getLineNumber());
+            throw reportErrorAtExpression(ErrorType.INCOMPATIBLE_TYPES, orExpression);
         }
-        if (((NativeBool) leftValue).isTrue()) {
+        if (((NativeBool) leftValue).getValue()) {
             return new NativeBool(true);
         }
         NativeData rightValue = evaluate(orExpression.getRight());
         if (!(rightValue instanceof NativeBool)) {
-            throw ioManager.reportError(ErrorType.INCOMPATIBLE_TYPES, orExpression, orExpression.getLineNumber());
+            throw reportErrorAtExpression(ErrorType.INCOMPATIBLE_TYPES, orExpression);
         }
-        return new NativeBool(((NativeBool) rightValue).isTrue());
+        return new NativeBool(((NativeBool) rightValue).getValue());
     }
 
     @Override
@@ -196,9 +197,9 @@ public class Interpreter implements AstVisitor<NativeData> {
         NativeData leftValue = evaluate(concatenationExpression.getLeft());
         NativeData rightValue = evaluate(concatenationExpression.getRight());
         if (!(leftValue instanceof NativeString && rightValue instanceof NativeString)) {
-            throw ioManager.reportError(ErrorType.INCOMPATIBLE_TYPES, concatenationExpression, concatenationExpression.getLineNumber());
+            throw reportErrorAtExpression(ErrorType.INCOMPATIBLE_TYPES, concatenationExpression);
         }
-        return ((NativeString) leftValue).concatenate((NativeString) rightValue);
+        return new NativeString(((NativeString) leftValue).getValue() + ((NativeString) rightValue).getValue());
     }
 
     @Override
@@ -206,9 +207,11 @@ public class Interpreter implements AstVisitor<NativeData> {
         NativeData leftValue = evaluate(consExpression.getLeft());
         NativeData rightValue = evaluate(consExpression.getRight());
         if (!(rightValue instanceof NativeList)) {
-            throw ioManager.reportError(ErrorType.INCOMPATIBLE_TYPES, consExpression, consExpression.getLineNumber());
+            throw reportErrorAtExpression(ErrorType.INCOMPATIBLE_TYPES, consExpression);
         }
-        return ((NativeList) rightValue).cons(leftValue);
+        Deque<NativeData> newItems = new LinkedList<>(((NativeList) rightValue).getItems());
+        newItems.addFirst(leftValue);
+        return new NativeList(newItems);
     }
 
     @Override
@@ -222,9 +225,9 @@ public class Interpreter implements AstVisitor<NativeData> {
     public NativeData visit(IfExpression ifExpression) {
         NativeData conditionValue = evaluate(ifExpression.getCondition());
         if (!(conditionValue instanceof NativeBool)) {
-            throw ioManager.reportError(ErrorType.INCOMPATIBLE_TYPES, ifExpression.getCondition(), ((LineNumbered) ifExpression.getCondition()).getLineNumber());
+            throw reportErrorAtExpression(ErrorType.INCOMPATIBLE_TYPES, ifExpression);
         }
-        return evaluateBlock(((NativeBool) conditionValue).isTrue() ? ifExpression.getConsequent() : ifExpression.getAlternative());
+        return evaluateBlock(((NativeBool) conditionValue).getValue() ? ifExpression.getConsequent() : ifExpression.getAlternative());
     }
 
     @Override
@@ -234,21 +237,27 @@ public class Interpreter implements AstVisitor<NativeData> {
 
     @Override
     public NativeData visit(CallExpression callExpression) {
-        String symbol = callExpression.getSymbol();
-        if (!environment.hasDefinitionFor(symbol)) {
-            throw ioManager.reportError(ErrorType.UNDEFINED_SYMBOL, callExpression, callExpression.getLineNumber());
+        NativeData calleeValue = evaluate(callExpression.getCallee());
+        if (!(calleeValue instanceof NativeFunction)) {
+            throw reportErrorAtExpression(ErrorType.UNCALLABLE_VALUE, callExpression);
         }
-        NativeData lookupResult = environment.lookUpValueOf(symbol);
-        if (!(lookupResult instanceof NativeFunction)) {
-            throw ioManager.reportError(ErrorType.UNCALLABLE_SYMBOL, callExpression, callExpression.getLineNumber());
+        List<Expression> argumentExpressions = callExpression.getArguments();
+        NativeFunction functionValue = (NativeFunction) calleeValue;
+        if (argumentExpressions.size() != functionValue.getArity()) {
+            throw ioManager.reportRuntimeError(ErrorType.INCORRECT_NUMBER_OF_ARGUMENTS, functionValue.makeValueRepresentation(), callExpression.getLineNumber());
         }
-        List<NativeData> arguments = new ArrayList<>();
-        callExpression.getArguments().forEach(expression -> arguments.add(evaluate(expression)));
-        return ((NativeFunction) lookupResult).call(arguments, new FunctionIoManagerWrapper(ioManager));
+        List<NativeData> argumentValues = new ArrayList<>();
+        argumentExpressions.forEach(expression -> argumentValues.add(evaluate(expression)));
+        return functionValue.call(argumentValues, new FunctionIoManagerWrapper(ioManager, functionValue.makeValueRepresentation(), callExpression.getLineNumber()));
     }
 
     private NativeData evaluate(Expression expression) {
         return expression.accept(this);
+    }
+
+    private <T extends LineNumbered & Expression>
+    UnwindingException reportErrorAtExpression(ErrorType errorType, T expression) {
+        return ioManager.reportStaticError(errorType, expression.getClass().getSimpleName(), expression.getLineNumber());
     }
 
     private <T extends Binary & Expression>
@@ -256,7 +265,7 @@ public class Interpreter implements AstVisitor<NativeData> {
         NativeData leftValue = evaluate(expression.getLeft());
         NativeData rightValue = evaluate(expression.getRight());
         if (!(leftValue instanceof NativeNumber && rightValue instanceof NativeNumber)) {
-            throw ioManager.reportError(ErrorType.INCOMPATIBLE_TYPES, expression, expression.getLineNumber());
+            throw reportErrorAtExpression(ErrorType.INCOMPATIBLE_TYPES, expression);
         }
         return operation.apply((NativeNumber) leftValue, (NativeNumber) rightValue);
     }

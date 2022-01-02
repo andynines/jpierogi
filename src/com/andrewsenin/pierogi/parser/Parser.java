@@ -10,12 +10,13 @@ import com.andrewsenin.pierogi.lexer.TokenType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Parser {
+public class Parser { // TODO: include line numbers on every expression
 
     private final List<Token> tokens;
     private final IoManager ioManager;
     private final List<Expression> expressions = new ArrayList<>();
     private int currentTokenIndex = 0;
+    private boolean hadError = false;
 
     public Parser(List<Token> tokens, IoManager ioManager) {
         this.tokens = tokens;
@@ -50,7 +51,8 @@ public class Parser {
     }
 
     private UnwindingException reportError(ErrorType errorType, Token token) {
-        return ioManager.reportError(errorType, token, token.getLineNumber());
+        hadError = true;
+        return ioManager.reportStaticError(errorType, token.getLexeme(), token.getLineNumber());
     }
 
     private Token consumeCurrentIfMatchesElseError(TokenType tokenType, ErrorType errorType) {
@@ -88,10 +90,10 @@ public class Parser {
         if (consumeCurrentIfMatchesAny(TokenType.IF)) {
             int lineNumber = peekPreviousToken().getLineNumber();
             Expression condition = parseNextExpression();
-            List<Expression> consequentExpressions = parseBlock();
+            List<Expression> consequent = parseBlock();
             consumeCurrentIfMatchesElseError(TokenType.ELSE, ErrorType.UNEXPECTED_TOKEN);
-            List<Expression> alternativeExpressions = parseBlock();
-            return new IfExpression(condition, consequentExpressions, alternativeExpressions, lineNumber);
+            List<Expression> alternative = parseBlock();
+            return new IfExpression(condition, consequent, alternative, lineNumber);
         }
         return parseLogic();
     }
@@ -190,7 +192,19 @@ public class Parser {
     private Expression parseUnary() {
         if (consumeCurrentIfMatchesAny(TokenType.MINUS)) return new NegationExpression(parseUnary(), peekPreviousToken().getLineNumber());
         if (consumeCurrentIfMatchesAny(TokenType.NOT)) return new NotExpression(parseUnary(), peekPreviousToken().getLineNumber());
-        return parseLiteral();
+        return parseCall();
+    }
+
+    private Expression parseCall() {
+        Expression left = parseLiteral();
+        while (true) {
+            if (consumeCurrentIfMatchesAny(TokenType.LEFT_PARENTHESIS)) {
+                left = parseArgumentList(left);
+            } else {
+                break;
+            }
+        }
+        return left;
     }
 
     private Expression parseLiteral() {
@@ -228,5 +242,16 @@ public class Parser {
             expressions.add(parseNextExpression());
         } while (!consumeCurrentIfMatchesAny(TokenType.RIGHT_BRACE));
         return expressions;
+    }
+
+    private Expression parseArgumentList(Expression callee) {
+        List<Expression> arguments = new ArrayList<>();
+        if (!matchesCurrentTokenType(TokenType.RIGHT_PARENTHESIS)) {
+            do {
+                arguments.add(parseNextExpression());
+            } while (consumeCurrentIfMatchesAny(TokenType.COMMA));
+        }
+        consumeCurrentIfMatchesElseError(TokenType.RIGHT_PARENTHESIS, ErrorType.UNMATCHED_PARENTHESIS);
+        return new CallExpression(callee, arguments, peekPreviousToken().getLineNumber());
     }
 }

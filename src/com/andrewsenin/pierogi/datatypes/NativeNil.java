@@ -8,6 +8,11 @@ public class NativeNil implements NativeData {
     }
 
     @Override
+    public String makeValueRepresentation() {
+        return "";
+    }
+
+    @Override
     public String makePrintRepresentation() {
         return "nil";
     }

@@ -8,11 +8,10 @@ public abstract class NativeFunction implements NativeData {
 
     public abstract NativeData call(List<NativeData> arguments, IoManager ioManager);
 
+    public abstract int getArity();
+
     @Override
     public boolean equals(NativeData other) {
         return this == other;
     }
-
-    @Override
-    public abstract String makePrintRepresentation();
 }

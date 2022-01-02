@@ -1,14 +1,15 @@
 package com.andrewsenin.pierogi.io;
 
-import com.andrewsenin.pierogi.ast.Expression;
-import com.andrewsenin.pierogi.lexer.Token;
-
 public class FunctionIoManagerWrapper implements IoManager {
 
     private final IoManager ioManager;
+    private final String functionRepresentation;
+    private final int functionLineNumber;
 
-    public FunctionIoManagerWrapper(IoManager ioManager) {
+    public FunctionIoManagerWrapper(IoManager ioManager, String functionRepresentation, int functionLineNumber) {
         this.ioManager = ioManager;
+        this.functionRepresentation = functionRepresentation;
+        this.functionLineNumber = functionLineNumber;
     }
 
     @Override
@@ -22,17 +23,25 @@ public class FunctionIoManagerWrapper implements IoManager {
     }
 
     @Override
-    public UnwindingException reportError(ErrorType errorType, String nearestLexeme, int lineNumber) {
-        return ioManager.reportError(errorType, nearestLexeme, lineNumber);
+    public UnwindingException reportStaticError(ErrorType errorType, String near, int lineNumber) {
+        ioManager.recordFunctionScope(functionRepresentation, functionLineNumber);
+        return ioManager.reportStaticError(errorType, near, lineNumber);
     }
 
     @Override
-    public UnwindingException reportError(ErrorType errorType, Token nearestToken, int lineNumber) {
-        return ioManager.reportError(errorType, nearestToken, lineNumber);
+    public UnwindingException reportRuntimeError(ErrorType errorType) {
+        ioManager.recordFunctionScope(functionRepresentation, functionLineNumber);
+        return ioManager.reportRuntimeError(errorType);
     }
 
     @Override
-    public UnwindingException reportError(ErrorType errorType, Expression nearestExpression, int lineNumber) {
-        return ioManager.reportError(errorType, nearestExpression, lineNumber);
+    public UnwindingException reportRuntimeError(ErrorType errorType, String near, int lineNumber) {
+        ioManager.recordFunctionScope(functionRepresentation, functionLineNumber);
+        return ioManager.reportRuntimeError(errorType, near, lineNumber);
+    }
+
+    @Override
+    public void recordFunctionScope(String functionRepresentation, int lineNumber) {
+        ioManager.recordFunctionScope(functionRepresentation, lineNumber);
     }
 }

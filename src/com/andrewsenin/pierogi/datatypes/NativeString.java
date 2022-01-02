@@ -8,8 +8,8 @@ public class NativeString implements NativeData {
         this.value = value;
     }
 
-    public NativeString concatenate(NativeString other) {
-        return new NativeString(value + other.value);
+    public String getValue() {
+        return value;
     }
 
     @Override
@@ -21,7 +21,12 @@ public class NativeString implements NativeData {
     }
 
     @Override
-    public String makePrintRepresentation() {
+    public String makeValueRepresentation() {
         return "\"" + value + "\"";
+    }
+
+    @Override
+    public String makePrintRepresentation() {
+        return value;
     }
 }

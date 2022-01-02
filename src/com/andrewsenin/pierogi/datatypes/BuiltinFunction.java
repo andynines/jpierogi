@@ -17,14 +17,21 @@ public class BuiltinFunction extends NativeFunction {
 
     @Override
     public NativeData call(List<NativeData> arguments, IoManager ioManager) {
-        if (arguments.size() != arity) {
-            // TODO: inject an iomanager that knows where we are in the code and throw an error from it here
-        }
         return definition.apply(arguments, ioManager);
     }
 
     @Override
-    public String makePrintRepresentation() {
+    public int getArity() {
+        return arity;
+    }
+
+    @Override
+    public String makeValueRepresentation() {
         return "<builtin function>";
+    }
+
+    @Override
+    public String makePrintRepresentation() {
+        return makeValueRepresentation();
     }
 }

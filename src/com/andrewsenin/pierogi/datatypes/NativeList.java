@@ -10,11 +10,8 @@ public class NativeList implements NativeData {
         this.items = items;
     }
 
-    public NativeList cons(NativeData value) {
-        // TODO: make this more efficient by homebrewing a linked list, and make sure it even works!
-        Deque<NativeData> newItems = items;
-        newItems.addFirst(value);
-        return new NativeList(newItems);
+    public Deque<NativeData> getItems() {
+        return items;
     }
 
     @Override
@@ -36,9 +33,14 @@ public class NativeList implements NativeData {
     }
 
     @Override
-    public String makePrintRepresentation() {
+    public String makeValueRepresentation() {
         List<String> itemStrings = new ArrayList<>();
-        items.forEach(item -> itemStrings.add(item.makePrintRepresentation()));
+        items.forEach(item -> itemStrings.add(item.makeValueRepresentation()));
         return "[" + String.join(", ", itemStrings) + "]";
+    }
+
+    @Override
+    public String makePrintRepresentation() {
+        return makeValueRepresentation();
     }
 }

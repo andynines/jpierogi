@@ -1,8 +1,5 @@
 package com.andrewsenin.pierogi.io;
 
-import com.andrewsenin.pierogi.ast.Expression;
-import com.andrewsenin.pierogi.lexer.Token;
-
 public class DummyIoManager implements IoManager {
     @Override
     public void print(String message) {
@@ -14,17 +11,21 @@ public class DummyIoManager implements IoManager {
     }
 
     @Override
-    public UnwindingException reportError(ErrorType errorType, String nearestLexeme, int lineNumber) {
+    public UnwindingException reportStaticError(ErrorType errorType, String near, int lineNumber) {
         return new UnwindingException();
     }
 
     @Override
-    public UnwindingException reportError(ErrorType errorType, Token nearestToken, int lineNumber) {
+    public UnwindingException reportRuntimeError(ErrorType errorType) {
         return new UnwindingException();
     }
 
     @Override
-    public UnwindingException reportError(ErrorType errorType, Expression nearestExpression, int lineNumber) {
+    public UnwindingException reportRuntimeError(ErrorType errorType, String near, int lineNumber) {
         return new UnwindingException();
+    }
+
+    @Override
+    public void recordFunctionScope(String functionName, int lineNumber) {
     }
 }

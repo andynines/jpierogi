@@ -2,16 +2,16 @@ package com.andrewsenin.pierogi.ast;
 
 public class CallExpression extends LineNumbered implements Expression {
 
-	protected final String symbol;
+	protected final Expression callee;
 	protected final java.util.List<Expression> arguments;
 
-	public CallExpression(String symbol, java.util.List<Expression> arguments) {
-		this(symbol, arguments, 0);
+	public CallExpression(Expression callee, java.util.List<Expression> arguments) {
+		this(callee, arguments, 0);
 	}
 
-	public CallExpression(String symbol, java.util.List<Expression> arguments, int lineNumber) {
+	public CallExpression(Expression callee, java.util.List<Expression> arguments, int lineNumber) {
 		super(lineNumber);
-		this.symbol = symbol;
+		this.callee = callee;
 		this.arguments = arguments;
 	}
 
@@ -26,11 +26,11 @@ public class CallExpression extends LineNumbered implements Expression {
 			return false;
 		}
 		CallExpression other = (CallExpression) object;
-		return symbol.equals(other.symbol) && arguments.equals(other.arguments);
+		return callee.equals(other.callee) && arguments.equals(other.arguments);
 	}
 
-	public String getSymbol() {
-		return symbol;
+	public Expression getCallee() {
+		return callee;
 	}
 
 	public java.util.List<Expression> getArguments() {

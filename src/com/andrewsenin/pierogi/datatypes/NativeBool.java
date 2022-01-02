@@ -8,12 +8,8 @@ public class NativeBool implements NativeData {
         this.value = value;
     }
 
-    public boolean isTrue() {
+    public boolean getValue() {
         return value;
-    }
-
-    public NativeBool negate() {
-        return new NativeBool(!value);
     }
 
     @Override
@@ -25,7 +21,12 @@ public class NativeBool implements NativeData {
     }
 
     @Override
-    public String makePrintRepresentation() {
+    public String makeValueRepresentation() {
         return Boolean.toString(value);
+    }
+
+    @Override
+    public String makePrintRepresentation() {
+        return makeValueRepresentation();
     }
 }

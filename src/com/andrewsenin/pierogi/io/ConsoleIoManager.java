@@ -1,8 +1,5 @@
 package com.andrewsenin.pierogi.io;
 
-import com.andrewsenin.pierogi.ast.Expression;
-import com.andrewsenin.pierogi.lexer.Token;
-
 import java.util.Scanner;
 
 public class ConsoleIoManager implements IoManager {
@@ -20,24 +17,29 @@ public class ConsoleIoManager implements IoManager {
     }
 
     @Override
-    public UnwindingException reportError(ErrorType errorType, String nearestLexeme, int lineNumber) {
-        printErrorMessage(errorType, nearestLexeme, lineNumber);
+    public UnwindingException reportStaticError(ErrorType errorType, String near, int lineNumber) {
+        printErrorMessage(errorType, near, lineNumber);
         return new StaticError();
     }
 
     @Override
-    public UnwindingException reportError(ErrorType errorType, Token nearestToken, int lineNumber) {
-        printErrorMessage(errorType, nearestToken.getLexeme(), lineNumber);
+    public UnwindingException reportRuntimeError(ErrorType errorType) {
+        System.err.println(errorType.name());
         return new StaticError();
     }
 
     @Override
-    public UnwindingException reportError(ErrorType errorType, Expression nearestExpression, int lineNumber) {
-        printErrorMessage(errorType, nearestExpression.toString(), lineNumber);
+    public UnwindingException reportRuntimeError(ErrorType errorType, String near, int lineNumber) {
+        printErrorMessage(errorType, near, lineNumber);
         return new RuntimeError();
     }
 
+    @Override
+    public void recordFunctionScope(String functionName, int lineNumber) {
+        System.err.println("In " + functionName + " on line " + lineNumber);
+    }
+
     private void printErrorMessage(ErrorType errorType, String near, int lineNumber) {
-        System.err.println("Error on line " + lineNumber + ": " + errorType.name() + " near \"" + near + "\"");
+        System.err.println("Error on line " + lineNumber + ": " + errorType.name() + " near " + near);
     }
 }

@@ -122,7 +122,7 @@ public class Lexer {
                 if (Character.isDigit(currentCharacter)) consumeNumber();
                 else if (isValidIdentifierFirstCharacter(currentCharacter)) consumeWord();
                 else
-                    throw ioManager.reportError(ErrorType.UNRECOGNIZED_CHARACTER, getCurrentLexeme(), lineNumber);
+                    throw ioManager.reportStaticError(ErrorType.UNRECOGNIZED_CHARACTER, getCurrentLexeme(), lineNumber);
         }
     }
 
@@ -167,13 +167,13 @@ public class Lexer {
         boolean nextCharacterIsEscaped = false;
         StringBuilder stringBuilder = new StringBuilder();
         while (peekCurrentCharacter() != '"' || nextCharacterIsEscaped) {
-            if (isAtEnd()) throw ioManager.reportError(ErrorType.UNTERMINATED_STRING, getCurrentLexeme(), lineNumber);
+            if (isAtEnd()) throw ioManager.reportStaticError(ErrorType.UNTERMINATED_STRING, getCurrentLexeme(), lineNumber);
             if (nextCharacterIsEscaped) {
                 if (ESCAPE_SEQUENCES.containsKey(peekCurrentCharacter())) {
                     stringBuilder.append(ESCAPE_SEQUENCES.get(peekCurrentCharacter()));
                     nextCharacterIsEscaped = false;
                 } else {
-                    throw ioManager.reportError(ErrorType.UNKNOWN_ESCAPE_SEQUENCE, "\\" + peekCurrentCharacter(), lineNumber);
+                    throw ioManager.reportStaticError(ErrorType.UNKNOWN_ESCAPE_SEQUENCE, "\\" + peekCurrentCharacter(), lineNumber);
                 }
             } else if (peekCurrentCharacter() == '\\') {
                 nextCharacterIsEscaped = true;
