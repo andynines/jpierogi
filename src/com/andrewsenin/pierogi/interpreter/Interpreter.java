@@ -238,9 +238,7 @@ public class Interpreter implements AstVisitor<NativeData> {
     @Override
     public NativeData visit(FunctionExpression functionExpression) {
         // TODO: can't do recursion yet
-        Environment closure = environment.makeClosure();
-        UserFunction userFunction = new UserFunction(functionExpression.getParameters(), functionExpression.getDefinition(), closure);
-        return userFunction;
+        return new UserFunction(functionExpression.getParameters(), functionExpression.getDefinition(), environment.makeClosure());
     }
 
     @Override

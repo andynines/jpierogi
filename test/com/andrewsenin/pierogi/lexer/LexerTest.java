@@ -26,6 +26,7 @@ public class LexerTest {
     @Test
     void recognize_each_token_type_individually() {
         expectSingleToken("\\", TokenType.BACKSLASH);
+        expectSingleToken("\n", TokenType.NEWLINE);
         expectSingleToken("+", TokenType.PLUS);
         expectSingleToken("-", TokenType.MINUS);
         expectSingleToken("*", TokenType.ASTERISK);
@@ -119,11 +120,11 @@ public class LexerTest {
                         TokenType.IDENTIFIER, TokenType.LEFT_BRACE, TokenType.BACKSLASH,
                         TokenType.IDENTIFIER, TokenType.LEFT_BRACE, TokenType.IDENTIFIER,
                         TokenType.PLUS, TokenType.IDENTIFIER, TokenType.RIGHT_BRACE,
-                        TokenType.RIGHT_BRACE, TokenType.IDENTIFIER, TokenType.EQUAL,
+                        TokenType.RIGHT_BRACE, TokenType.NEWLINE, TokenType.IDENTIFIER, TokenType.EQUAL,
                         TokenType.IDENTIFIER, TokenType.LEFT_PARENTHESIS, TokenType.NUMBER,
-                        TokenType.RIGHT_PARENTHESIS, TokenType.IDENTIFIER, TokenType.LEFT_PARENTHESIS,
+                        TokenType.RIGHT_PARENTHESIS, TokenType.NEWLINE, TokenType.IDENTIFIER, TokenType.LEFT_PARENTHESIS,
                         TokenType.IDENTIFIER, TokenType.LEFT_PARENTHESIS, TokenType.NUMBER,
-                        TokenType.RIGHT_PARENTHESIS, TokenType.RIGHT_PARENTHESIS
+                        TokenType.RIGHT_PARENTHESIS, TokenType.RIGHT_PARENTHESIS, TokenType.NEWLINE
                 )
         );
     }

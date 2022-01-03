@@ -73,6 +73,7 @@ public class LanguageExecutable {
     }
 
     private static String readFileContents(File file) {
+        // TODO: this should be handled by the IoManager
         String contents = null;
         try {
             contents = Files.readString(Path.of(String.valueOf(file)));

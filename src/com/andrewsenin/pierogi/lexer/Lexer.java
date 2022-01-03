@@ -107,7 +107,9 @@ public class Lexer {
                 addToken(consumeCurrentCharacterIfMatches('=') ? TokenType.SLASH_EQUAL : TokenType.SLASH);
                 break;
             case '\n':
+                addToken(TokenType.NEWLINE);
                 lineNumber++;
+                break;
             case ' ':
             case '\t':
             case '\r':
@@ -152,7 +154,7 @@ public class Lexer {
     }
 
     private void addToken(TokenType tokenType) {
-        tokens.add(new Token(tokenType, "", null, lineNumber));
+        tokens.add(new Token(tokenType, getCurrentLexeme(), null, lineNumber));
     }
 
     private void addToken(TokenType tokenType, String lexeme, Object literalValue) {

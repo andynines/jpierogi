@@ -39,5 +39,6 @@ public enum TokenType {
     STRING,
     NUMBER,
 
+    NEWLINE,
     EOF
 }

@@ -24,7 +24,9 @@ public class Parser { // TODO: include line numbers on every expression
     }
 
     public List<Expression> parseTokens() {
-        while (!isAtEnd()) expressions.add(parseNextExpression());
+        while (!isAtEnd()) {
+            expressions.add(parseNextExpression());
+        }
         return expressions;
     }
 
@@ -70,7 +72,10 @@ public class Parser { // TODO: include line numbers on every expression
     }
 
     private Expression parseNextExpression() {
-        return parseDefinition();
+        consumeUntilNotNewline(); // TODO: fix this newline travesty
+        Expression expression = parseDefinition();
+        consumeUntilNotNewline();
+        return expression;
     }
 
     private Expression parseDefinition() {
@@ -232,6 +237,10 @@ public class Parser { // TODO: include line numbers on every expression
         }
         if (consumeCurrentIfMatchesAny(TokenType.LEFT_SQUARE_BRACKET)) return parseList();
         throw reportError(ErrorType.UNEXPECTED_TOKEN, peekCurrentToken());
+    }
+
+    private void consumeUntilNotNewline() {
+        while (consumeCurrentIfMatchesAny(TokenType.NEWLINE));
     }
 
     private Expression parseList() {
